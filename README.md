@@ -141,6 +141,18 @@ To run tests with coverage, use:
 $ coverage run ./testmanage.py test
 ```
 
+#### Running the example app
+
+Sometimes you may want to confirm the rendering in the browser with your own eyes instead of test assertions.
+
+You can run the example app with:
+
+```sh
+$ ./testmanage.py runserver 0:8000
+```
+
+Now you can visit the app in the browser at `http://localhost:8000/`.
+
 ### Python version management
 
 Tox will attempt to find installed Python versions on your machine.
