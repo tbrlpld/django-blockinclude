@@ -86,13 +86,13 @@ $ tox
 Or, you can run them for a specific environment:
 
 ```sh
-$ tox -e python3.11-django4.2
+$ tox -e python3.13-django5.2
 ```
 
 Or, run only a specific test:
 
 ```sh
-$ tox -e python3.11-django4.2 blockinclude.tests.test_file.TestClass.test_method
+$ tox -e python3.13-django5.2 blockinclude.tests.test_file.TestClass.test_method
 ```
 
 To run the test app interactively, use:
