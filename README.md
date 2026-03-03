@@ -32,8 +32,8 @@ INSTALLED_APPS = ["blockinclude", ...]
 
 ### Supported versions
 
-- Python >= 3.8
-- Django >= 3.2
+- Python >= 3.10
+- Django >= 4.2
 
 ## Contributing
 
