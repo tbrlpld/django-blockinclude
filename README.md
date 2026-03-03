@@ -43,7 +43,7 @@ To make changes to this project, first clone this repository:
 
 ```sh
 $ git clone https://github.com/tbrlpld/django-blockinclude.git
-$ cd blockinclude
+$ cd django-blockinclude
 ```
 
 With your preferred virtualenv activated, install the development dependencies:
