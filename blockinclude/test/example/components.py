@@ -30,7 +30,7 @@ class ReturnsFixedContentComponent(Component):
         self,
         parent_context: "Optional[RenderContext]" = None,
     ) -> "SafeString":
-        return format_html("<h1>Hello World Return</h1>\n")
+        return format_html("<h1>Hello World Return</h1>\n", [])
 
 
 class PassesFixedNameToContextComponent(Component):
@@ -195,7 +195,7 @@ class HeaderWithMediaComponent(Component):
         self,
         parent_context: "Optional[RenderContext]" = None,
     ) -> "SafeString":
-        return format_html("<header>Header with Media</header>")
+        return format_html("<header>Header with Media</header>", [])
 
     class Media:
         css = {"all": ("header.css",)}
@@ -207,7 +207,7 @@ class FooterWithMediaComponent(Component):
         self,
         parent_context: "Optional[RenderContext]" = None,
     ) -> "SafeString":
-        return format_html("<footer>Footer with Media</footer>")
+        return format_html("<footer>Footer with Media</footer>", [])
 
     class Media:
         css = {"all": ("footer.css",)}
