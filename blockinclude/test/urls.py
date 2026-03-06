@@ -1,8 +1,13 @@
 from django.urls import path
 
-from blockinclude.test.example.views import index
+import blockinclude.test.example.views
 
 
 urlpatterns = [
-    path("", index),
+    path(
+        "<str:filename>",
+        blockinclude.test.example.views.render_test_template,
+        name="render_test_template",
+    ),
+    path("", blockinclude.test.example.views.index),
 ]

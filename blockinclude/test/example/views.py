@@ -4,6 +4,10 @@ import os
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+import django.http
+import django.template
+import django.urls
+
 from django.shortcuts import render
 
 
@@ -26,7 +30,7 @@ def index(request: "HttpRequest") -> "HttpResponse":
 
     links = [
         Link(
-            href="https://example.com/" + ttf,
+            href=django.urls.reverse("render_test_template", kwargs={"filename": ttf}),
             text=ttf,
         )
         for ttf in test_template_filenames
@@ -37,3 +41,17 @@ def index(request: "HttpRequest") -> "HttpResponse":
         template_name="pages/index.html",
         context={"links": links},
     )
+
+
+def render_test_template(request: "HttpRequest", filename: str) -> "HttpResponse":
+    """Render the requested test template."""
+    try:
+        return render(
+            request,
+            template_name=f"tests/{filename}",
+        )
+    except django.template.TemplateDoesNotExist:
+        return django.http.HttpResponseNotFound(
+            "Requested test template not found.",
+            filename,
+        )
