@@ -1,5 +1,9 @@
 {% extends '_test-base.html' %}
 
-{% block body %}
+{% block content %}
     <h1>Basic include</h1>
+
+    <div>
+        {% include 'includes/static-paragraph.html' %}
+    </div>
 {% endblock %}
