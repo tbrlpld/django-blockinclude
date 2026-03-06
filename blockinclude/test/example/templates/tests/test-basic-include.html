@@ -3,12 +3,45 @@
 {% block content %}
     <h1>Basic include</h1>
 
+    <hr>
     <p>
         Below is a paragraph included from a another template.
         This is the plain include functionality with the default include tag.
     </p>
-
     <div>
         {% include 'includes/static-paragraph.html' %}
+    </div>
+
+    <hr>
+    <p>
+        You can also pass variables to included.
+        Here is a box that receives a string as the <code>content</code> variable.
+    </p>
+    <div>
+        {% include 'includes/the-box.html' with content="Lorem ipsum dolor sit amet, consectetur adipiscing elit." %}
+    </div>
+
+    <hr>
+    <p>
+        You can even pass markup as variable.
+        (Notice the bolded "Lorem").
+    </p>
+    <div>
+        {% include 'includes/the-box.html' with content="<b>Lorem</b> ipsum dolor sit amet, consectetur adipiscing elit." %}
+    </div>
+
+    <hr>
+    <p>
+        Unfortunately, you can only pass single lines.
+        When you break the tag, then the tag does not work anymore and is printed in the output.
+    </p>
+    <div>
+        {%
+            include 'includes/the-box.html' with content="
+                <p>
+                    <b>Lorem</b> ipsum dolor sit amet, consectetur adipiscing elit.
+                </p>
+            "
+        %}
     </div>
 {% endblock %}
