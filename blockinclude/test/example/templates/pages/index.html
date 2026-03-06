@@ -1,11 +1,6 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Block Include Examples</title>
-</head>
-<body>
+{% extends '_base.html' %}
+
+{% block body %}
     <h1>Examples</h1>
     <ol>
         {% for link in links %}
@@ -14,5 +9,4 @@
             </li>
         {% endfor %}
     </ol>
-</body>
-</html>
+{% endblock %}
