@@ -9,5 +9,5 @@ urlpatterns = [
         blockinclude.test.example.views.render_test_template,
         name="render_test_template",
     ),
-    path("", blockinclude.test.example.views.index),
+    path("", blockinclude.test.example.views.index, name="index"),
 ]
