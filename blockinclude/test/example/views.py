@@ -34,6 +34,7 @@ def index(request: "HttpRequest") -> "HttpResponse":
             text=ttf,
         )
         for ttf in test_template_filenames
+        if not ttf.startswith("_")
     ]
 
     return render(
@@ -45,6 +46,12 @@ def index(request: "HttpRequest") -> "HttpResponse":
 
 def render_test_template(request: "HttpRequest", filename: str) -> "HttpResponse":
     """Render the requested test template."""
+    if filename.startswith("_"):
+        return django.http.HttpResponseNotFound(
+            "Requested test template not found.",
+            filename,
+        )
+
     try:
         return render(
             request,
