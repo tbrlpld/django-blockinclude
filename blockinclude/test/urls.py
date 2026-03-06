@@ -1,8 +1,8 @@
 from django.urls import path
 
-from blockinclude.test.example.views import kitchen_sink
+from blockinclude.test.example.views import index
 
 
 urlpatterns = [
-    path("", kitchen_sink),
+    path("", index),
 ]

@@ -6,7 +6,7 @@ import django
 
 from django.test import RequestFactory, TestCase
 
-from blockinclude.test.example.views import kitchen_sink
+from blockinclude.test.example.views import index
 
 
 class TestKitchenSink(TestCase):
@@ -14,7 +14,7 @@ class TestKitchenSink(TestCase):
         factory = RequestFactory()
         request = factory.get("/")
 
-        response = kitchen_sink(request)
+        response = index(request)
 
         self.assertEqual(response.status_code, HTTPStatus.OK)
         response_html = response.content.decode("utf-8")
