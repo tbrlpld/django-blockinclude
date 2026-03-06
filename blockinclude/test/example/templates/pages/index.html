@@ -1,10 +1,18 @@
-{% load blockinclude %}
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Block Include Examples</title>
 </head>
 <body>
-    <h1>Block Include Examples</h1>
+    <h1>Examples</h1>
+    <ol>
+        {% for link in links %}
+            <li>
+                <a href="{{ link.href }}">{{ link.text }}</a>
+            </li>
+        {% endfor %}
+    </ol>
 </body>
 </html>
