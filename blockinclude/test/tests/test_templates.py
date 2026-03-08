@@ -1,15 +1,22 @@
+import re
+
+import bs4
 import django.shortcuts
 import django.test
 
 
 class TestTemplates(django.test.SimpleTestCase):
     def test_blockinclude_passes_content_from_parent(self) -> None:
-        result = django.shortcuts.render(
+        response = django.shortcuts.render(
             request=None,
             template_name="tests/test-blockinclude-passes-content-from-parent.html",
             context={},
         )
 
         # Make soup.
+        soup = bs4.BeautifulSoup(response.content, "html.parser")
         # Find content from parent in container.
-        self.fail(result)
+        # the_box = soup.find(id="the-box")
+        # result = the_box.find(string=re.match("Lorem"))
+        result = soup.find(string=re.compile("Lorem"))
+        self.assertIsNotNone(result)
