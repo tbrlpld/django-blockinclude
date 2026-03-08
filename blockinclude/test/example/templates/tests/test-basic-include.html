@@ -35,17 +35,15 @@
         Unfortunately, you can only pass single lines.
         When you break the tag over multiple lines, then the tag does not work anymore and is printed in the output.
     </p>
+    <div>
+        {% include 'includes/the-box.html' with content="
+                <p>
+                    <b>Lorem</b> ipsum dolor sit amet, consectetur adipiscing elit.
+                </p>
+            " %}
+    </div>
     <p>
         You could use or create a <code>fragment</code> tag as <a href="https://mitchel.me/slippers/docs/template-tags-filters/#fragment">Slippers</a> and <a href="https://docs.wagtail.org/en/latest/reference/ui/components.html#fragment">Wagtail</a> have them.
         These tags allow a block of rendered template to be stored in a variable which can then be output or passed around.
     </p>
-    <div>
-        {%
-            include 'includes/the-box.html' with content="
-                <p>
-                    <b>Lorem</b> ipsum dolor sit amet, consectetur adipiscing elit.
-                </p>
-            "
-        %}
-    </div>
 {% endblock %}
