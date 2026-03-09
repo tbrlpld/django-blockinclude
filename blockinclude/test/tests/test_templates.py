@@ -9,7 +9,7 @@ class TestTemplates(django.test.SimpleTestCase):
     def test_blockinclude_passes_text_content_from_parent(self) -> None:
         response = django.shortcuts.render(
             request=None,
-            template_name="tests/test-blockinclude-passes-text-content-from-parent.html",
+            template_name="tests/test-01-blockinclude-passes-text-content-from-parent.html",
             context={},
         )
 
