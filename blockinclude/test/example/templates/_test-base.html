@@ -2,6 +2,15 @@
 
 {% block title %}{{ title }} | {{ block.super }}{% endblock %}
 
+{% block extra_head %}
+    <style>
+        .output {
+            border: 2px dotted lightgray;
+            padding: 1em;
+        }
+    </style>
+{% endblock extra_head %}
+
 {% block body %}
     <a href="{% url "index" %}">← Back</a>
 
