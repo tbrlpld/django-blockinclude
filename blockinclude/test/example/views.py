@@ -33,7 +33,7 @@ def index(request: "HttpRequest") -> "HttpResponse":
             href=django.urls.reverse("render_test_template", kwargs={"filename": ttf}),
             text=ttf,
         )
-        for ttf in test_template_filenames
+        for ttf in sorted(test_template_filenames)
         if not ttf.startswith("_")
     ]
 
