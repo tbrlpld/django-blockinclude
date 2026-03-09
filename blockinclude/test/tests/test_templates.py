@@ -6,15 +6,22 @@ import django.test
 
 
 class TestTemplates(django.test.SimpleTestCase):
-    def test_blockinclude_passes_text_content_from_parent(self) -> None:
+    @staticmethod
+    def get_soup_for_template(template_name: str) -> bs4.BeautifulSoup:
         response = django.shortcuts.render(
             request=None,
-            template_name="tests/test-01-blockinclude-with-simple-text-content.html",
+            template_name=template_name,
             context={},
         )
 
-        # Make soup.
         soup = bs4.BeautifulSoup(response.content, "html.parser")
+        return soup
+
+    def test_blockinclude_passes_text_content_from_parent(self) -> None:
+        soup = self.get_soup_for_template(
+            template_name="tests/test-01-blockinclude-with-simple-text-content.html",
+        )
+
         # Find container defined in the include.
         the_box = soup.find(id="the-box")
         assert isinstance(the_box, bs4.Tag)  # type narrowing
@@ -23,14 +30,10 @@ class TestTemplates(django.test.SimpleTestCase):
         self.assertIsNotNone(result)
 
     def test_blockinclude_passes_markup_content_from_parent(self) -> None:
-        response = django.shortcuts.render(
-            request=None,
-            template_name=("tests/test-02-blockinclude-content-with-markup.html"),
-            context={},
+        soup = self.get_soup_for_template(
+            template_name="tests/test-02-blockinclude-content-with-markup.html",
         )
 
-        # Make soup.
-        soup = bs4.BeautifulSoup(response.content, "html.parser")
         the_box = soup.find(id="the-box")
         assert isinstance(the_box, bs4.Tag)  # type narrowing
         bolded = the_box.find("b", string="Lorem")
