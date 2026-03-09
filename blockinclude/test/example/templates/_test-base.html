@@ -1,9 +1,10 @@
 {% extends '_base.html' %}
 
-{% block title %}Test | {{ block.super }}{% endblock %}
+{% block title %}{{ title }} | {{ block.super }}{% endblock %}
 
 {% block body %}
     <a href="{% url "index" %}">← Back</a>
 
+    <h1>{{ title }}</h1>
     {% block content %}{% endblock %}
 {% endblock %}

@@ -31,7 +31,7 @@ def index(request: "HttpRequest") -> "HttpResponse":
     links = [
         Link(
             href=django.urls.reverse("render_test_template", kwargs={"filename": ttf}),
-            text=ttf,
+            text=get_title_from_filename(ttf),
         )
         for ttf in sorted(test_template_filenames)
         if not ttf.startswith("_")
@@ -52,13 +52,21 @@ def render_test_template(request: "HttpRequest", filename: str) -> "HttpResponse
             filename,
         )
 
+    title = get_title_from_filename(filename)
+
     try:
         return render(
             request,
             template_name=f"tests/{filename}",
+            context={"title": title},
         )
     except django.template.TemplateDoesNotExist:
         return django.http.HttpResponseNotFound(
             "Requested test template not found.",
             filename,
         )
+
+
+def get_title_from_filename(filename: str) -> str:
+    title = filename[8:-5].replace("-", " ").title()
+    return title

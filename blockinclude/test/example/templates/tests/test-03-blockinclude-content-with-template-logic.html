@@ -1,0 +1,18 @@
+{% extends '_test-base.html' %}
+
+{% load blockinclude %}
+
+{% block content %}
+    <p>
+        Here the content of the block tag is not only text, but also includes markup.
+        This should test that the content is passed as in renderable form.
+        Markup that we write in the block should not be escaped.
+        Notice the bolded "Lorem" in the output.
+    </p>
+
+    <div>
+        {% blockinclude 'includes/the-box.html' %}
+            <b>Lorem</b> ipsum dolor sit amet, consectetur adipiscing elit.
+        {% endblockinclude %}
+    </div>
+{% endblock %}
