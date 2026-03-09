@@ -58,7 +58,13 @@ def render_test_template(request: "HttpRequest", filename: str) -> "HttpResponse
         return render(
             request,
             template_name=f"tests/{filename}",
-            context={"title": title},
+            context={
+                "title": title,
+                "items": [
+                    "Lorem",
+                    "Ipsum",
+                ],
+            },
         )
     except django.template.TemplateDoesNotExist:
         return django.http.HttpResponseNotFound(
