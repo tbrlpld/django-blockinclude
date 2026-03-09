@@ -43,7 +43,7 @@ keywords = [
 
 [project.optional-dependencies]
 testing = [
-    "beautifulsoup4==4.8.1",
+    "beautifulsoup4==4.14.3",
     "dj-database-url==2.1.0",
     # Running tests with coverage inside the tox test environment.
     "coverage==7.3.4",
@@ -67,7 +67,6 @@ dev = [
     "flake8-comprehensions",
     "mypy==1.7.1",
     "django-stubs[compatible-mypy]==4.2.7",
-    "types-beautifulsoup4",
     "types-requests==2.31.0.20240125",
 ]
 
