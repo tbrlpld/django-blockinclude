@@ -15,7 +15,7 @@ class TestTemplates(django.test.SimpleTestCase):
         response = django.shortcuts.render(
             request=None,
             template_name=template_name,
-            context={},
+            context=context or {},
         )
 
         soup = bs4.BeautifulSoup(response.content, "html.parser")
@@ -59,9 +59,6 @@ class TestTemplates(django.test.SimpleTestCase):
         # The loop to render the list is in the parent.
         ul = the_box.find("ul")
         assert isinstance(ul, bs4.Tag)  # type narrowing
-        item_0 = ul.contents[0]
-        assert isinstance(item_0, bs4.Tag)  # type narrowing
-        self.assertEqual(item_0.string, "Lorem")
-        item_1 = ul.contents[1]
-        assert isinstance(item_1, bs4.Tag)  # type narrowing
-        self.assertEqual(item_1.string, "Ipsum")
+        items = ul.find_all("li")
+        self.assertEqual(items[0].string, "Lorem")
+        self.assertEqual(items[1].string, "Ipsum")
