@@ -31,8 +31,8 @@ class TestTemplates(django.test.SimpleTestCase):
         return soup
 
     @staticmethod
-    def get_included_box(soup: bs4.BeautifulSoup) -> bs4.Tag:
-        the_box = soup.find(id="the-box")
+    def get_included_box(soup: bs4.Tag) -> bs4.Tag:
+        the_box = soup.find(attrs={"data-test": "the-box"})
         assert isinstance(the_box, bs4.Tag)  # type narrowing
         return the_box
 
@@ -96,7 +96,6 @@ class TestTemplates(django.test.SimpleTestCase):
         )
 
         the_box = self.get_included_box(soup=soup)
-        # The content is found in the box.
         box_content_text = the_box.find(string=re.compile("Lorem"))
         self.assertIsNotNone(box_content_text)
         assert isinstance(the_box.header, bs4.Tag)
@@ -109,8 +108,17 @@ class TestTemplates(django.test.SimpleTestCase):
         )
 
         the_box = self.get_included_box(soup=soup)
-        # the content is found in the box.
         unexpected_box_content_text = the_box.find(string=re.compile("Adipisci"))
         self.assertIsNone(unexpected_box_content_text)
         expected_box_content_text = the_box.find(string=re.compile("Lorem"))
         self.assertIsNotNone(expected_box_content_text)
+
+    def test_recursion(self) -> None:
+        soup = self.get_soup_for_template(
+            template_name="tests/test-07-blockinclude-recursion.html",
+        )
+
+        outer_box = self.get_included_box(soup=soup)
+        self.assertTrue(outer_box.text.strip().startswith("Lorem"))
+        inner_box = self.get_included_box(soup=outer_box)
+        self.assertTrue(inner_box.text.strip().startswith("Phasellus"))
