@@ -102,3 +102,15 @@ class TestTemplates(django.test.SimpleTestCase):
         assert isinstance(the_box.header, bs4.Tag)
         box_header_text = the_box.header.find(string=re.compile("Adipisci"))
         self.assertIsNotNone(box_header_text)
+
+    def test_block_content_overrides_kwarg(self) -> None:
+        soup = self.get_soup_for_template(
+            template_name="tests/test-06-blockinclude-block-content-overrides-kwarg.html",
+        )
+
+        the_box = self.get_included_box(soup=soup)
+        # the content is found in the box.
+        unexpected_box_content_text = the_box.find(string=re.compile("Adipisci"))
+        self.assertIsNone(unexpected_box_content_text)
+        expected_box_content_text = the_box.find(string=re.compile("Lorem"))
+        self.assertIsNotNone(expected_box_content_text)
