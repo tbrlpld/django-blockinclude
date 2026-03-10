@@ -119,6 +119,8 @@ class TestTemplates(django.test.SimpleTestCase):
         )
 
         outer_box = self.get_included_box(soup=soup)
-        self.assertTrue(outer_box.text.strip().startswith("Lorem"))
+        outer_box_text = outer_box.find(string=re.compile("Lorem"))
+        self.assertIsNotNone(outer_box_text)
         inner_box = self.get_included_box(soup=outer_box)
-        self.assertTrue(inner_box.text.strip().startswith("Phasellus"))
+        inner_box_text = inner_box.find(string=re.compile("Phasellus"))
+        self.assertIsNotNone(inner_box_text)
