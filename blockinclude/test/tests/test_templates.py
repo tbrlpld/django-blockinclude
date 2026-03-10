@@ -75,7 +75,7 @@ class TestTemplates(django.test.SimpleTestCase):
         # The content is found in the box.
         box_content = the_box.find(string=re.compile("Lorem"))
         self.assertIsNotNone(box_content)
-        # The content is not found in the output in the parent template.
+        # The content is not found in the output container in the parent template.
         output = soup.find(id="content-output-in-parent")
         assert isinstance(output, bs4.Tag)
         output_content = output.find(string=re.compile("Lorem"))
