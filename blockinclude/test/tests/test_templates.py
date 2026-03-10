@@ -8,6 +8,15 @@ import django.test
 
 
 class TestTemplates(django.test.SimpleTestCase):
+    """
+    These test rely on some of the setup being done in the template. When writing of
+    reviewing these tests, be sure to also take a look at rendered templates.
+
+    A lot of these test rely on features of the template language and try to test its
+    behavior. It would have been too cumbersome to try make all of that work with all
+    the setup in and assertion in Python.
+    """
+
     @staticmethod
     def get_soup_for_template(
         template_name: str, context: dict[Any, Any] | None = None
@@ -80,3 +89,16 @@ class TestTemplates(django.test.SimpleTestCase):
         assert isinstance(output, bs4.Tag)
         output_content = output.find(string=re.compile("Lorem"))
         self.assertIsNone(output_content)
+
+    def test_takes_kwargs(self) -> None:
+        soup = self.get_soup_for_template(
+            template_name="tests/test-05-blockinclude-takes-kwargs.html",
+        )
+
+        the_box = self.get_included_box(soup=soup)
+        # The content is found in the box.
+        box_content_text = the_box.find(string=re.compile("Lorem"))
+        self.assertIsNotNone(box_content_text)
+        assert isinstance(the_box.header, bs4.Tag)
+        box_header_text = the_box.header.find(string=re.compile("Adipisci"))
+        self.assertIsNotNone(box_header_text)
