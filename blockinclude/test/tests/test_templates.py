@@ -36,6 +36,18 @@ class TestTemplates(django.test.SimpleTestCase):
         assert isinstance(the_box, bs4.Tag)  # type narrowing
         return the_box
 
+    def assertStringInTag(self, string: str, tag: bs4.Tag) -> None:
+        result = tag.find(string=re.compile(string))
+        self.assertIsNotNone(
+            obj=result, msg="String not found in tag: '%s' %s" % (string, tag)
+        )
+
+    def assertStringNotInTag(self, string: str, tag: bs4.Tag) -> None:
+        result = tag.find(string=re.compile(string))
+        self.assertIsNone(
+            obj=result, msg="String unexpectedly found in tag: '%s' %s" % (string, tag)
+        )
+
     def test_simple_text_content(self) -> None:
         soup = self.get_soup_for_template(
             template_name="tests/test-01-blockinclude-with-simple-text-content.html",
@@ -44,8 +56,7 @@ class TestTemplates(django.test.SimpleTestCase):
         # Find container defined in the include.
         the_box = self.get_included_box(soup=soup)
         # Find the content, defined in the parent template, in the container.
-        result = the_box.find(string=re.compile("Lorem"))
-        self.assertIsNotNone(result)
+        self.assertStringInTag(string="Lorem", tag=the_box)
 
     def test_content_with_markup(self) -> None:
         soup = self.get_soup_for_template(
@@ -87,8 +98,7 @@ class TestTemplates(django.test.SimpleTestCase):
         # The content is not found in the output container in the parent template.
         output = soup.find(id="content-output-in-parent")
         assert isinstance(output, bs4.Tag)
-        output_content = output.find(string=re.compile("Lorem"))
-        self.assertIsNone(output_content)
+        self.assertStringNotInTag(string="Lorem", tag=output)
 
     def test_takes_kwargs(self) -> None:
         soup = self.get_soup_for_template(
@@ -96,11 +106,9 @@ class TestTemplates(django.test.SimpleTestCase):
         )
 
         the_box = self.get_included_box(soup=soup)
-        box_content_text = the_box.find(string=re.compile("Lorem"))
-        self.assertIsNotNone(box_content_text)
+        self.assertStringInTag(string="Lorem", tag=the_box)
         assert isinstance(the_box.header, bs4.Tag)
-        box_header_text = the_box.header.find(string=re.compile("Adipisci"))
-        self.assertIsNotNone(box_header_text)
+        self.assertStringInTag(string="Adipisci", tag=the_box.header)
 
     def test_block_content_overrides_kwarg(self) -> None:
         soup = self.get_soup_for_template(
@@ -108,10 +116,8 @@ class TestTemplates(django.test.SimpleTestCase):
         )
 
         the_box = self.get_included_box(soup=soup)
-        unexpected_box_content_text = the_box.find(string=re.compile("Adipisci"))
-        self.assertIsNone(unexpected_box_content_text)
-        expected_box_content_text = the_box.find(string=re.compile("Lorem"))
-        self.assertIsNotNone(expected_box_content_text)
+        self.assertStringNotInTag(string="Adipisci", tag=the_box)
+        self.assertStringInTag(string="Lorem", tag=the_box)
 
     def test_recursion(self) -> None:
         soup = self.get_soup_for_template(
@@ -119,8 +125,15 @@ class TestTemplates(django.test.SimpleTestCase):
         )
 
         outer_box = self.get_included_box(soup=soup)
-        outer_box_text = outer_box.find(string=re.compile("Lorem"))
-        self.assertIsNotNone(outer_box_text)
+        self.assertStringInTag(string="Lorem", tag=outer_box)
         inner_box = self.get_included_box(soup=outer_box)
-        inner_box_text = inner_box.find(string=re.compile("Phasellus"))
-        self.assertIsNotNone(inner_box_text)
+        self.assertStringInTag(string="Phasellus", tag=inner_box)
+
+    def test_slot_content_with_markup(self) -> None:
+        soup = self.get_soup_for_template(
+            template_name="tests/test-08-slot-content-with-markup.html",
+        )
+
+        the_box = self.get_included_box(soup=soup)
+        assert isinstance(the_box.div, bs4.Tag)
+        self.assertStringInTag(string="Lorem", tag=the_box.div)
