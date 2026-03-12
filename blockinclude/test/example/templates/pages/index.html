@@ -2,7 +2,7 @@
 
 {% block body %}
     <h1>Examples</h1>
-    <ol>
+    <ol start="0">
         {% for link in links %}
             <li>
                 <a href="{{ link.href }}">{{ link.text }}</a>
