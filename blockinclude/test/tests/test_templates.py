@@ -132,8 +132,21 @@ class TestTemplates(django.test.SimpleTestCase):
     def test_slot_content_with_markup(self) -> None:
         soup = self.get_soup_for_template(
             template_name="tests/test-08-slot-content-with-markup.html",
+            context={
+                "items": [
+                    "Etiam",
+                    "Donec",
+                ],
+            },
         )
 
         the_box = self.get_included_box(soup=soup)
         assert isinstance(the_box.div, bs4.Tag)
         self.assertStringInTag(string="Lorem", tag=the_box.div)
+        assert isinstance(the_box.header, bs4.Tag)
+        self.assertStringInTag(string="Phasellus", tag=the_box.header)
+        assert isinstance(the_box.footer, bs4.Tag)
+        assert isinstance(the_box.footer.ul, bs4.Tag)
+        items = the_box.footer.ul.find_all("li")
+        self.assertEqual(items[0].string, "Etiam")
+        self.assertEqual(items[1].string, "Donec")

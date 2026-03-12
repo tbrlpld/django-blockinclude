@@ -4,20 +4,32 @@
 
 {% block content %}
     <p>
-        Inside the content block of one <code>blockinclude</code> you can use another <code>blockinclude</code>.
+        When more than one variable need should be filled with markup, <code>blockinclude</code> runs into the same issue as the default <code>include</code> tag.
+        Single markup lines can be provided as a keyword argument after the `with` keyword in the tag.
+        But, multi-line markup or even template logic would not work.
+    </p>
+
+    <p>
+        This is where the <code>slot</code> tag comes it.
+        Inside of <code>blockinclude</code>, you wrap a block of markup or template logic in a <code>slot</code>/<code>endslot</code> block.
+        The template logic is executed in the parent and the resulting markup is passed to the included template with the defined name of the slot.
     </p>
 
     <div>
-        {% blockinclude 'includes/the-box.html' %}
-            <div style="display: flex; flex-direction: column; gap: 2rem;">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        {% blockinclude 'includes/the-slotted-box.html' %}
+            {% slot header %}
+                Phasellus nulla justo, dictum eu diam non, congue consequat ipsum.
+            {% endslot %}
 
-                {% blockinclude 'includes/the-box.html' %}
-                    Phasellus nulla justo, dictum eu diam non, congue consequat ipsum.
-                {% endblockinclude %}
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 
-                Minima modi non quia.
-            </div>
+            {% slot footer %}
+                <ul>
+                    {% for item in items %}
+                        <li>{{ item }}</li>
+                    {% endfor %}
+                </ul>
+            {% endslot %}
         {% endblockinclude %}
     </div>
 {% endblock %}
