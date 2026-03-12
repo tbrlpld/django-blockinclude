@@ -11,8 +11,9 @@
 
     <p>
         This is where the <code>slot</code> tag comes it.
-        Inside of <code>blockinclude</code>, you wrap a block of markup or template logic in a <code>slot</code>/<code>endslot</code> block.
-        The template logic is executed in the parent and the resulting markup is passed to the included template with the defined name of the slot.
+        Inside of <code>blockinclude</code>, you wrap a block of markup in a <code>slot</code>/<code>endslot</code> block.
+        The markup in the slot block is available in the included template as a variable with the name of the slot.
+        All other markup in the <code>blockinclude</code>, that is outside the <code>slot</code> block, is still passed as the <code>content</code> variable.
     </p>
 
     <div>
@@ -22,14 +23,6 @@
             {% endslot %}
 
             Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-
-            {% slot footer %}
-                <ul>
-                    {% for item in items %}
-                        <li>{{ item }}</li>
-                    {% endfor %}
-                </ul>
-            {% endslot %}
         {% endblockinclude %}
     </div>
 {% endblock %}
