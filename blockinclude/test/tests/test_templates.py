@@ -216,3 +216,13 @@ class TestTemplates(django.test.SimpleTestCase):
         assert isinstance(the_box.header, bs4.Tag)
         self.assertStringNotInTag(string="Adipisci", tag=the_box.header)
         self.assertStringInTag(string="Phasellus", tag=the_box.header)
+
+    def test_slot_named_content_is_overridden(self) -> None:
+        soup = self.get_soup_for_template(
+            template_name="tests/test-14-slot-named-content-is-overridden.html",
+        )
+
+        the_box = self.get_included_box(soup=soup)
+        assert isinstance(the_box, bs4.Tag)
+        self.assertStringNotInTag(string="Adipisci", tag=the_box)
+        self.assertStringInTag(string="Lorem", tag=the_box)
