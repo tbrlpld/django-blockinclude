@@ -8,7 +8,7 @@
 
 ---
 
-An extension of the `include` tag that allows markup from the parent to be passed to the included template.
+**An extended `include` tag to allow blocks of markup to be passed to the included template.**
 
 ## Getting started
 
