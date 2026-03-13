@@ -204,3 +204,15 @@ class TestTemplates(django.test.SimpleTestCase):
         self.assertStringInTag(string="Minima", tag=the_box.div)
         assert isinstance(the_box.header, bs4.Tag)
         self.assertStringInTag(string="Phasellus", tag=the_box.header)
+
+    def test_slot_overrides_kwarg(self) -> None:
+        soup = self.get_soup_for_template(
+            template_name="tests/test-13-slot-overrides-kwarg.html",
+        )
+
+        the_box = self.get_included_box(soup=soup)
+        assert isinstance(the_box.div, bs4.Tag)
+        self.assertStringInTag(string="Lorem", tag=the_box.div)
+        assert isinstance(the_box.header, bs4.Tag)
+        self.assertStringNotInTag(string="Adipisci", tag=the_box.header)
+        self.assertStringInTag(string="Phasellus", tag=the_box.header)
