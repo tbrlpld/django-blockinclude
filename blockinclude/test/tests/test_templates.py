@@ -166,3 +166,16 @@ class TestTemplates(django.test.SimpleTestCase):
         items = the_box.header.ul.find_all("li")
         self.assertEqual(items[0].string, "Etiam")
         self.assertEqual(items[1].string, "Donec")
+
+    def test_multiple_slots(self) -> None:
+        soup = self.get_soup_for_template(
+            template_name="tests/test-10-multiple-slots.html",
+        )
+
+        the_box = self.get_included_box(soup=soup)
+        assert isinstance(the_box.div, bs4.Tag)
+        self.assertStringInTag(string="Lorem", tag=the_box.div)
+        assert isinstance(the_box.header, bs4.Tag)
+        self.assertStringInTag(string="Phasellus", tag=the_box.header)
+        assert isinstance(the_box.footer, bs4.Tag)
+        self.assertStringInTag(string="Minima", tag=the_box.footer)
