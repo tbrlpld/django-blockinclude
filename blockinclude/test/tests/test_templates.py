@@ -64,8 +64,9 @@ class TestTemplates(django.test.SimpleTestCase):
         )
 
         the_box = self.get_included_box(soup=soup)
-        bolded = the_box.find(name="b", string="Lorem")
-        self.assertIsNotNone(bolded)
+        bolded = the_box.find(name="b")
+        assert isinstance(bolded, bs4.Tag)
+        self.assertStringInTag(string="Lorem", tag=bolded)
 
     def test_content_with_template_logic(self) -> None:
         soup = self.get_soup_for_template(
