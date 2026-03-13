@@ -192,3 +192,15 @@ class TestTemplates(django.test.SimpleTestCase):
         self.assertStringInTag(string="Phasellus", tag=the_box.header)
         assert isinstance(the_box.footer, bs4.Tag)
         self.assertStringInTag(string="Minima", tag=the_box.footer)
+
+    def test_slot_surrounded_by_blockinclude_content(self) -> None:
+        soup = self.get_soup_for_template(
+            template_name="tests/test-12-slot-surrounded-by-blockinclude-content.html",
+        )
+
+        the_box = self.get_included_box(soup=soup)
+        assert isinstance(the_box.div, bs4.Tag)
+        self.assertStringInTag(string="Lorem", tag=the_box.div)
+        self.assertStringInTag(string="Minima", tag=the_box.div)
+        assert isinstance(the_box.header, bs4.Tag)
+        self.assertStringInTag(string="Phasellus", tag=the_box.header)

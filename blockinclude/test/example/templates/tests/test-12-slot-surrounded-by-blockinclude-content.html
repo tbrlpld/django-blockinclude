@@ -1,0 +1,21 @@
+{% extends '_test-base.html' %}
+
+{% load blockinclude %}
+
+{% block content %}
+    <p>
+        When the <code>slot</code> block is in the between other non-slot content, then the non-slot content is merged (as if the <code>slot</code> did not exist) and provided as the <code>content</code> variable to the included template.
+    </p>
+
+    <div>
+        {% blockinclude 'includes/the-slotted-box.html' %}
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+
+            {% slot header %}
+                Phasellus nulla justo, dictum eu diam non, congue consequat ipsum.
+            {% endslot %}
+
+            Minima modi non quia.
+        {% endblockinclude %}
+    </div>
+{% endblock %}
