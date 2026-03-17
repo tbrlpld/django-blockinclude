@@ -48,6 +48,24 @@ class TestTemplates(django.test.SimpleTestCase):
             obj=result, msg="String unexpectedly found in tag: '%s' %s" % (string, tag)
         )
 
+    def assertIsTag(self, obj: Any) -> bs4.Tag:
+        """
+        Assert that the given object is a Tag and return it.
+
+        This method combines the type assertion with type narrowing by returning the
+        checked object. This ensures that a type failure would create a sensible test
+        failure too, while also avoiding duplication of the assertion.
+
+        We need to return the asserted object, because mypy otherwise won't notice that
+        we asserted the type.
+        """
+        try:
+            assert isinstance(obj, bs4.Tag)
+        except AssertionError:
+            self.fail("Object %s is unexpectedly not a tag" % obj)
+        else:
+            return obj
+
     def test_simple_text_content(self) -> None:
         soup = self.get_soup_for_template(
             template_name="tests/test-01-blockinclude-with-simple-text-content.html",
@@ -65,7 +83,7 @@ class TestTemplates(django.test.SimpleTestCase):
 
         the_box = self.get_included_box(soup=soup)
         bolded = the_box.find(name="b")
-        assert isinstance(bolded, bs4.Tag)
+        bolded = self.assertIsTag(bolded)
         self.assertStringInTag(string="Lorem", tag=bolded)
 
     def test_content_with_template_logic(self) -> None:
@@ -82,7 +100,7 @@ class TestTemplates(django.test.SimpleTestCase):
         the_box = self.get_included_box(soup=soup)
         # The loop to render the list is in the parent.
         ul = the_box.find("ul")
-        assert isinstance(ul, bs4.Tag)  # type narrowing
+        ul = self.assertIsTag(ul)
         items = ul.find_all("li")
         self.assertEqual(items[0].string, "Lorem")
         self.assertEqual(items[1].string, "Ipsum")
@@ -98,7 +116,7 @@ class TestTemplates(django.test.SimpleTestCase):
         self.assertIsNotNone(box_content)
         # The content is not found in the output container in the parent template.
         output = soup.find(id="content-output-in-parent")
-        assert isinstance(output, bs4.Tag)
+        output = self.assertIsTag(output)
         self.assertStringNotInTag(string="Lorem", tag=output)
 
     def test_takes_kwargs(self) -> None:
@@ -108,8 +126,8 @@ class TestTemplates(django.test.SimpleTestCase):
 
         the_box = self.get_included_box(soup=soup)
         self.assertStringInTag(string="Lorem", tag=the_box)
-        assert isinstance(the_box.header, bs4.Tag)
-        self.assertStringInTag(string="Adipisci", tag=the_box.header)
+        header = self.assertIsTag(the_box.header)
+        self.assertStringInTag(string="Adipisci", tag=header)
 
     def test_block_content_overrides_kwarg(self) -> None:
         soup = self.get_soup_for_template(
@@ -142,11 +160,11 @@ class TestTemplates(django.test.SimpleTestCase):
         )
 
         the_box = self.get_included_box(soup=soup)
-        assert isinstance(the_box.div, bs4.Tag)
-        self.assertStringInTag(string="Lorem", tag=the_box.div)
-        assert isinstance(the_box.header, bs4.Tag)
-        assert isinstance(the_box.header.b, bs4.Tag)
-        self.assertStringInTag(string="Phasellus", tag=the_box.header.b)
+        div = self.assertIsTag(the_box.div)
+        self.assertStringInTag(string="Lorem", tag=div)
+        header = self.assertIsTag(the_box.header)
+        bolded = self.assertIsTag(header.b)
+        self.assertStringInTag(string="Phasellus", tag=bolded)
 
     def test_slot_content_with_template_logic(self) -> None:
         soup = self.get_soup_for_template(
@@ -160,11 +178,12 @@ class TestTemplates(django.test.SimpleTestCase):
         )
 
         the_box = self.get_included_box(soup=soup)
-        assert isinstance(the_box.div, bs4.Tag)
-        self.assertStringInTag(string="Lorem", tag=the_box.div)
+        div = self.assertIsTag(the_box.div)
+        self.assertStringInTag(string="Lorem", tag=div)
         assert isinstance(the_box.header, bs4.Tag)
-        assert isinstance(the_box.header.ul, bs4.Tag)
-        items = the_box.header.ul.find_all("li")
+        header = self.assertIsTag(the_box.header)
+        list_ = self.assertIsTag(header.ul)
+        items = list_.find_all("li")
         self.assertEqual(items[0].string, "Etiam")
         self.assertEqual(items[1].string, "Donec")
 
@@ -174,12 +193,12 @@ class TestTemplates(django.test.SimpleTestCase):
         )
 
         the_box = self.get_included_box(soup=soup)
-        assert isinstance(the_box.div, bs4.Tag)
-        self.assertStringInTag(string="Lorem", tag=the_box.div)
-        assert isinstance(the_box.header, bs4.Tag)
-        self.assertStringInTag(string="Phasellus", tag=the_box.header)
-        assert isinstance(the_box.footer, bs4.Tag)
-        self.assertStringInTag(string="Minima", tag=the_box.footer)
+        div = self.assertIsTag(the_box.div)
+        self.assertStringInTag(string="Lorem", tag=div)
+        header = self.assertIsTag(the_box.header)
+        self.assertStringInTag(string="Phasellus", tag=header)
+        footer = self.assertIsTag(the_box.footer)
+        self.assertStringInTag(string="Minima", tag=footer)
 
     def test_slot_order_does_not_matter(self) -> None:
         soup = self.get_soup_for_template(
@@ -187,12 +206,12 @@ class TestTemplates(django.test.SimpleTestCase):
         )
 
         the_box = self.get_included_box(soup=soup)
-        assert isinstance(the_box.div, bs4.Tag)
-        self.assertStringInTag(string="Lorem", tag=the_box.div)
-        assert isinstance(the_box.header, bs4.Tag)
-        self.assertStringInTag(string="Phasellus", tag=the_box.header)
-        assert isinstance(the_box.footer, bs4.Tag)
-        self.assertStringInTag(string="Minima", tag=the_box.footer)
+        div = self.assertIsTag(the_box.div)
+        self.assertStringInTag(string="Lorem", tag=div)
+        header = self.assertIsTag(the_box.header)
+        self.assertStringInTag(string="Phasellus", tag=header)
+        footer = self.assertIsTag(the_box.footer)
+        self.assertStringInTag(string="Minima", tag=footer)
 
     def test_slot_surrounded_by_blockinclude_content(self) -> None:
         soup = self.get_soup_for_template(
@@ -200,11 +219,11 @@ class TestTemplates(django.test.SimpleTestCase):
         )
 
         the_box = self.get_included_box(soup=soup)
-        assert isinstance(the_box.div, bs4.Tag)
-        self.assertStringInTag(string="Lorem", tag=the_box.div)
-        self.assertStringInTag(string="Minima", tag=the_box.div)
-        assert isinstance(the_box.header, bs4.Tag)
-        self.assertStringInTag(string="Phasellus", tag=the_box.header)
+        div = self.assertIsTag(the_box.div)
+        self.assertStringInTag(string="Lorem", tag=div)
+        self.assertStringInTag(string="Minima", tag=div)
+        header = self.assertIsTag(the_box.header)
+        self.assertStringInTag(string="Phasellus", tag=header)
 
     def test_slot_overrides_kwarg(self) -> None:
         soup = self.get_soup_for_template(
@@ -212,11 +231,11 @@ class TestTemplates(django.test.SimpleTestCase):
         )
 
         the_box = self.get_included_box(soup=soup)
-        assert isinstance(the_box.div, bs4.Tag)
-        self.assertStringInTag(string="Lorem", tag=the_box.div)
-        assert isinstance(the_box.header, bs4.Tag)
-        self.assertStringNotInTag(string="Adipisci", tag=the_box.header)
-        self.assertStringInTag(string="Phasellus", tag=the_box.header)
+        div = self.assertIsTag(the_box.div)
+        self.assertStringInTag(string="Lorem", tag=div)
+        header = self.assertIsTag(the_box.header)
+        self.assertStringNotInTag(string="Adipisci", tag=header)
+        self.assertStringInTag(string="Phasellus", tag=header)
 
     def test_slot_named_content_is_overridden(self) -> None:
         soup = self.get_soup_for_template(
@@ -224,6 +243,6 @@ class TestTemplates(django.test.SimpleTestCase):
         )
 
         the_box = self.get_included_box(soup=soup)
-        assert isinstance(the_box, bs4.Tag)
+        the_box = self.assertIsTag(the_box)
         self.assertStringNotInTag(string="Adipisci", tag=the_box)
         self.assertStringInTag(string="Lorem", tag=the_box)
