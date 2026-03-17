@@ -246,3 +246,15 @@ class TestTemplates(django.test.SimpleTestCase):
         the_box = self.assertIsTag(the_box)
         self.assertStringNotInTag(string="Adipisci", tag=the_box)
         self.assertStringInTag(string="Lorem", tag=the_box)
+
+    def test_only_does_not_remove_content_or_slots(self) -> None:
+        soup = self.get_soup_for_template(
+            template_name="tests/test-15-only-does-not-remove-content-or-slot.html",
+        )
+
+        the_box = self.get_included_box(soup=soup)
+        div = self.assertIsTag(the_box.div)
+        self.assertStringInTag(string="Lorem", tag=div)
+        header = self.assertIsTag(the_box.header)
+        self.assertStringInTag(string="Phasellus", tag=header)
+        self.assertIsNone(the_box.footer)
