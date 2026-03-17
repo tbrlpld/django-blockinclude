@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Started new project.
+- Started new project with initial implementation of the `blockinclude` and `slot` template tags.
 
 ### Changed
 
