@@ -258,3 +258,28 @@ class TestTemplates(django.test.SimpleTestCase):
         header = self.assertIsTag(the_box.header)
         self.assertStringInTag(string="Phasellus", tag=header)
         self.assertIsNone(the_box.footer)
+
+    def test_repeated_renders_produce_consistent_output(self) -> None:
+        """
+        Rendering the same template multiple times must produce identical output.
+
+        Django caches the compiled template node tree and reuses the same Node
+        instances across renders (see the ``django.template.loaders.cached.Loader``
+        docs and the thread-safety section for custom template tags).  If
+        ``BlockInclude.render()`` mutated instance attributes (e.g. by removing slot
+        nodes from ``self.content_nodelist`` or writing into ``self.extra_context``),
+        a second render of the same template would see a corrupted node tree and
+        produce wrong output.  This test guards against that regression.
+        """
+        template_name = "tests/test-16-repeated-render.html"
+        first_soup = self.get_soup_for_template(template_name=template_name)
+        second_soup = self.get_soup_for_template(template_name=template_name)
+
+        # Both renders must contain the slot content.
+        first_box = self.get_included_box(soup=first_soup)
+        second_box = self.get_included_box(soup=second_soup)
+
+        for box in (first_box, second_box):
+            self.assertStringInTag(string="Lorem", tag=box)
+            header = self.assertIsTag(box.header)
+            self.assertStringInTag(string="Phasellus", tag=header)
