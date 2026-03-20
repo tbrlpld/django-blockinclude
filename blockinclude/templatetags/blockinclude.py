@@ -1,5 +1,3 @@
-import copy
-
 from typing import TYPE_CHECKING, Any, cast
 
 import django.template
@@ -50,23 +48,24 @@ class BlockInclude(django.template.loader_tags.IncludeNode):
         variables passed as keyword arguments.
         """
 
-        # Render content "in place" with context of parent.
-        rendered_content = self.content_nodelist.render(context)
+        include_context_data = {}
 
-        # Create new context object to avoid poisoning the parent context.
-        new_context = copy.copy(context)
-
-        # Add the `content` variable to the context. The extra context has been altered
-        # during parsing to lookup this variable and pass it with the same name to the
-        # included template.
-        new_context.push({"content": rendered_content})
+        # Render content "in place" with context of parent. Save as the `content`
+        # variable to the context in which the include tag is rendered. We have set up
+        # the extra context of the include tag as if it used
+        # `{% include "..." with content=content %}. Now we are making sure that the
+        # `content` variable can be resolved from the context.
+        include_context_data["content"] = self.content_nodelist.render(context)
 
         # Do the same for the slot nodes
         for slot in self.slot_nodes:
-            rendered_slot_content = slot.render(context)
-            new_context.push({slot.target_variable_name: rendered_slot_content})
+            include_context_data[slot.target_variable_name] = slot.render(context)
 
-        return super().render(new_context)
+        # Create a new layer of context with the new data in it. We use a context
+        # manager so that after the end of the function, our custom context data is
+        # removed from the context again. This avoids "poisoning" the parent context.
+        with context.update(include_context_data):
+            return super().render(context)
 
 
 @register.tag(name="blockinclude")
