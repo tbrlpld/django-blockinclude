@@ -4,6 +4,7 @@ from typing import Any
 
 import bs4
 import django.shortcuts
+import django.template
 import django.test
 
 
@@ -237,15 +238,11 @@ class TestTemplates(django.test.SimpleTestCase):
         self.assertStringNotInTag(string="Adipisci", tag=header)
         self.assertStringInTag(string="Phasellus", tag=header)
 
-    def test_slot_named_content_is_overridden(self) -> None:
-        soup = self.get_soup_for_template(
-            template_name="tests/test-14-slot-named-content-is-overridden.html",
-        )
-
-        the_box = self.get_included_box(soup=soup)
-        the_box = self.assertIsTag(the_box)
-        self.assertStringNotInTag(string="Adipisci", tag=the_box)
-        self.assertStringInTag(string="Lorem", tag=the_box)
+    def test_slot_named_content_raises_error(self) -> None:
+        with self.assertRaises(django.template.TemplateSyntaxError):
+            self.get_soup_for_template(
+                template_name="tests/test-14-slot-named-content-raises-error.html",
+            )
 
     def test_only_does_not_remove_content_or_slots(self) -> None:
         soup = self.get_soup_for_template(

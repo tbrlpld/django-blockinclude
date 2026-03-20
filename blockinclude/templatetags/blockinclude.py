@@ -8,7 +8,11 @@ if TYPE_CHECKING:
     import django.utils.safestring
 
 
-BLOCK_CONTENT_VAR_NAME = "content"
+BLOCKINCLUDE_START_TAG = "blockinclude"
+BLOCKINCLUDE_END_TAG = "endblockinclude"
+BLOCKINCLUDE_CONTENT_VAR_NAME = "content"
+SLOT_START_TAG = "slot"
+SLOT_END_TAG = "endslot"
 
 
 register = django.template.library.Library()
@@ -58,13 +62,13 @@ class BlockInclude(django.template.loader_tags.IncludeNode):
         # the extra context of the include tag as if it used
         # `{% include "..." with content=content %}. Now we are making sure that the
         # `content` variable can be resolved from the context.
-        include_context_data[BLOCK_CONTENT_VAR_NAME] = self.content_nodelist.render(
-            context
+        include_context_data[BLOCKINCLUDE_CONTENT_VAR_NAME] = (
+            self.content_nodelist.render(context)
         )
 
         # Do the same for the slot nodes
         for slot in self.slot_nodes:
-            if slot.target_variable_name == BLOCK_CONTENT_VAR_NAME:
+            if slot.target_variable_name == BLOCKINCLUDE_CONTENT_VAR_NAME:
                 # Ignore slots named the same as the main content variable. Ideally this
                 # does not get here, but ignoring those slots for good measure.
                 continue
@@ -77,13 +81,13 @@ class BlockInclude(django.template.loader_tags.IncludeNode):
             return super().render(context)
 
 
-@register.tag(name="blockinclude")
+@register.tag(name=BLOCKINCLUDE_START_TAG)
 def do_block_include(
     parser: django.template.base.Parser,
     token: django.template.base.Token,
 ) -> BlockInclude:
     # Grab the content
-    content_nodelist = parser.parse(("endblockinclude",))
+    content_nodelist = parser.parse((BLOCKINCLUDE_END_TAG,))
     # "Consume" the closing tag. Whatever that means. Including this based on the docs.
     # https://docs.djangoproject.com/en/6.0/howto/custom-template-tags/#parsing-until-another-block-tag
     parser.delete_first_token()
@@ -97,9 +101,11 @@ def do_block_include(
     # it expects a `content` variable in the context in which the include node is
     # rendered. Basically as if `{% include "..." with content=content %}` was used.
     extra_context = include_node.extra_context
-    extra_context[BLOCK_CONTENT_VAR_NAME] = django.template.base.FilterExpression(
-        BLOCK_CONTENT_VAR_NAME,
-        parser,
+    extra_context[BLOCKINCLUDE_CONTENT_VAR_NAME] = (
+        django.template.base.FilterExpression(
+            BLOCKINCLUDE_CONTENT_VAR_NAME,
+            parser,
+        )
     )
 
     # We do the same for each slot.
@@ -151,19 +157,26 @@ class SlotNode(django.template.base.Node):
         return self.content_nodelist.render(context)
 
 
-@register.tag(name="slot")
+@register.tag(name=SLOT_START_TAG)
 def do_store_content(
     parser: django.template.base.Parser,
     token: django.template.base.Token,
 ) -> SlotNode:
-    content_nodelist = parser.parse(("endslot",))
+    content_nodelist = parser.parse((SLOT_END_TAG,))
     parser.delete_first_token()
 
     bits = token.split_contents()
     if len(bits) != 2:
         raise django.template.exceptions.TemplateSyntaxError(
             "%r tag takes exactly one argument: the name of the variable "
-            "as which the content should be passed to the included template." % bits[0]
+            "as which the content should be passed to the included template."
+            % SLOT_START_TAG
+        )
+    if bits[1] == BLOCKINCLUDE_CONTENT_VAR_NAME:
+        raise django.template.exceptions.TemplateSyntaxError(
+            "%r is a protected variable used for the main block content of %r. "
+            "It can not be used as an argument to %r."
+            % (BLOCKINCLUDE_CONTENT_VAR_NAME, BLOCKINCLUDE_START_TAG, SLOT_START_TAG)
         )
 
     return SlotNode(
