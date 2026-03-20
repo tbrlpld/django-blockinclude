@@ -1,3 +1,5 @@
+import copy
+
 from typing import TYPE_CHECKING, Any, cast
 
 import django.template
@@ -18,6 +20,7 @@ class BlockInclude(django.template.loader_tags.IncludeNode):
         template: django.template.base.FilterExpression,
         *args: tuple[Any, ...],
         content_nodelist: django.template.NodeList,
+        slot_nodes: list["SlotNode"],
         extra_context: dict[Any, Any] | None = None,
         isolated_context: bool = False,
         **kwargs: dict[Any, Any],
@@ -25,6 +28,7 @@ class BlockInclude(django.template.loader_tags.IncludeNode):
         # Store the content nodelist. The rest of the initialization is handled by the
         # IncludeNode.
         self.content_nodelist = content_nodelist
+        self.slot_nodes = slot_nodes
         super().__init__(
             template,
             *args,
@@ -45,46 +49,24 @@ class BlockInclude(django.template.loader_tags.IncludeNode):
         tag limits the context to the `extra_context`, which includes only the
         variables passed as keyword arguments.
         """
-        slots = cast(list[SlotNode], self.content_nodelist.get_nodes_by_type(SlotNode))
-        for slot in slots:
-            # Remove the slot nodes from the content nodelist so they are not rendered
-            # as part of the main content.
-            self.content_nodelist.remove(slot)
-            # Render each slots content "in place" with context of the parent.
-            rendered_slot_content = slot.render(context)
-            # Store slot content as extra context in the variable defined on the slot
-            # node.
-            self.add_content_to_extra_context(
-                key=slot.target_variable_name,
-                content=rendered_slot_content,
-            )
 
         # Render content "in place" with context of parent.
         rendered_content = self.content_nodelist.render(context)
-        # Add the `content` variable to the extra context that is passed to the included
-        # template.
-        self.add_content_to_extra_context(key="content", content=rendered_content)
-        return super().render(context)
 
-    def add_content_to_extra_context(self, key: str, content: str) -> None:
-        """
-        Add the given content string as key to the extra context.
+        # Create new context object to avoid poisoning the parent context.
+        new_context = copy.copy(context)
 
-        The extra context will be provided to the included template even if the context
-        is isolated via the `only` keyword.
+        # Add the `content` variable to the context. The extra context has been altered
+        # during parsing to lookup this variable and pass it with the same name to the
+        # included template.
+        new_context.push({"content": rendered_content})
 
-        The values in extra context need to be a template `Variable` type. To pass an
-        exact string, it needs to be surrounded by quotes. Usually extra context is
-        passed with `variable=value` bits of the include tag. To pass a string you would
-        quote it (`variable="The string"`). That is basically what we are reproducing
-        here (`content="..."`).
-        """
-        # Need to ignore the type here, because somehow the assumed type for
-        # `extra_context` dict values is only `FilterExpression` and I am having
-        # a hard time constructing that here.
-        self.extra_context[key] = django.template.base.Variable(
-            var=f'"{content}"',
-        )  # type: ignore[assignment]
+        # Do the same for the slot nodes
+        for slot in self.slot_nodes:
+            rendered_slot_content = slot.render(context)
+            new_context.push({slot.target_variable_name: rendered_slot_content})
+
+        return super().render(new_context)
 
 
 @register.tag(name="blockinclude")
@@ -98,17 +80,39 @@ def do_block_include(
     # https://docs.djangoproject.com/en/6.0/howto/custom-template-tags/#parsing-until-another-block-tag
     parser.delete_first_token()
 
+    slot_nodes = cast(list[SlotNode], content_nodelist.get_nodes_by_type(SlotNode))
+    for slot in slot_nodes:
+        # Remove the slot nodes from the content nodelist so they are not rendered
+        # as part of the main content.
+        content_nodelist.remove(slot)
+
     # With the rest of the tag, let the default include tag do its thing.
     include_node: django.template.loader_tags.IncludeNode = (
         django.template.loader_tags.do_include(parser, token)
     )
+
+    # We update the extra context (the stuff passed as keyword arguments) so that is
+    # it expects a `content` variable in the context in which the include node is
+    # rendered. Basically as if `{% include "..." with content=content %}` was used.
+    extra_context = include_node.extra_context
+    extra_context["content"] = django.template.base.FilterExpression("content", parser)
+
+    # We do the same for each slot.
+    for slot_node in slot_nodes:
+        extra_context[slot_node.target_variable_name] = (
+            django.template.base.FilterExpression(
+                slot_node.target_variable_name,
+                parser,
+            )
+        )
 
     # Construct our own node with the properties of the IncludeNode. Our node is based
     # on the IncludeNode and lets it handle the default include functionality.
     return BlockInclude(
         template=include_node.template,
         content_nodelist=content_nodelist,
-        extra_context=include_node.extra_context,
+        slot_nodes=slot_nodes,
+        extra_context=extra_context,
         isolated_context=include_node.isolated_context,
     )
 
