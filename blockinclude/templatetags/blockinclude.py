@@ -80,12 +80,6 @@ def do_block_include(
     # https://docs.djangoproject.com/en/6.0/howto/custom-template-tags/#parsing-until-another-block-tag
     parser.delete_first_token()
 
-    slot_nodes = cast(list[SlotNode], content_nodelist.get_nodes_by_type(SlotNode))
-    for slot in slot_nodes:
-        # Remove the slot nodes from the content nodelist so they are not rendered
-        # as part of the main content.
-        content_nodelist.remove(slot)
-
     # With the rest of the tag, let the default include tag do its thing.
     include_node: django.template.loader_tags.IncludeNode = (
         django.template.loader_tags.do_include(parser, token)
@@ -98,7 +92,12 @@ def do_block_include(
     extra_context["content"] = django.template.base.FilterExpression("content", parser)
 
     # We do the same for each slot.
+    slot_nodes = cast(list[SlotNode], content_nodelist.get_nodes_by_type(SlotNode))
     for slot_node in slot_nodes:
+        # Remove the slot nodes from the content nodelist so they are not rendered
+        # as part of the main content.
+        content_nodelist.remove(slot_node)
+
         extra_context[slot_node.target_variable_name] = (
             django.template.base.FilterExpression(
                 slot_node.target_variable_name,
