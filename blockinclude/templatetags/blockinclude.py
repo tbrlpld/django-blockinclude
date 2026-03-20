@@ -8,6 +8,9 @@ if TYPE_CHECKING:
     import django.utils.safestring
 
 
+BLOCK_CONTENT_VAR_NAME = "content"
+
+
 register = django.template.library.Library()
 
 
@@ -48,17 +51,23 @@ class BlockInclude(django.template.loader_tags.IncludeNode):
         variables passed as keyword arguments.
         """
 
-        include_context_data = {}
+        include_context_data: dict[str, django.utils.safestring.SafeString] = {}
 
         # Render content "in place" with context of parent. Save as the `content`
         # variable to the context in which the include tag is rendered. We have set up
         # the extra context of the include tag as if it used
         # `{% include "..." with content=content %}. Now we are making sure that the
         # `content` variable can be resolved from the context.
-        include_context_data["content"] = self.content_nodelist.render(context)
+        include_context_data[BLOCK_CONTENT_VAR_NAME] = self.content_nodelist.render(
+            context
+        )
 
         # Do the same for the slot nodes
         for slot in self.slot_nodes:
+            if slot.target_variable_name == BLOCK_CONTENT_VAR_NAME:
+                # Ignore slots named the same as the main content variable. Ideally this
+                # does not get here, but ignoring those slots for good measure.
+                continue
             include_context_data[slot.target_variable_name] = slot.render(context)
 
         # Create a new layer of context with the new data in it. We use a context
@@ -88,7 +97,10 @@ def do_block_include(
     # it expects a `content` variable in the context in which the include node is
     # rendered. Basically as if `{% include "..." with content=content %}` was used.
     extra_context = include_node.extra_context
-    extra_context["content"] = django.template.base.FilterExpression("content", parser)
+    extra_context[BLOCK_CONTENT_VAR_NAME] = django.template.base.FilterExpression(
+        BLOCK_CONTENT_VAR_NAME,
+        parser,
+    )
 
     # We do the same for each slot.
     slot_nodes = cast(list[SlotNode], content_nodelist.get_nodes_by_type(SlotNode))
