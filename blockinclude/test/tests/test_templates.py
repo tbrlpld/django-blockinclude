@@ -255,3 +255,13 @@ class TestTemplates(django.test.SimpleTestCase):
         header = self.assertIsTag(the_box.header)
         self.assertStringInTag(string="Phasellus", tag=header)
         self.assertIsNone(the_box.footer)
+
+    def test_contentn_variable_in_parent(self) -> None:
+        soup = self.get_soup_for_template(
+            template_name="tests/test-16-content-variable-in-parent.html",
+        )
+
+        the_box = self.get_included_box(soup=soup)
+        div = self.assertIsTag(the_box.div)
+        self.assertStringNotInTag(string="Adipisci", tag=div)
+        self.assertStringInTag(string="Lorem", tag=div)

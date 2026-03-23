@@ -1,0 +1,17 @@
+{% extends '_test-base.html' %}
+
+{% load blockinclude %}
+
+{% block content %}
+    <p>
+        When the parent template defines a <code>content</code> variable, this is overridden by the  <code>blockinclude</code> tag.
+    </p>
+
+    <div>
+        {% with content="Adipisci atque aut incidunt" %}
+            {% blockinclude 'includes/the-slotted-box.html' only %}
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            {% endblockinclude %}
+        {% endwith %}
+    </div>
+{% endblock %}
