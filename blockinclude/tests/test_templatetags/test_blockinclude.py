@@ -19,6 +19,13 @@ class TestBlockIncludeNodeReuse(django.test.SimpleTestCase):
        so stale rendered content from a previous render leaks into later ones.
     """
 
+    TEMPLATE_WITH_VARIABLE_IN_BLOCK = (
+        "{% load blockinclude %}"
+        "{% blockinclude 'includes/the-slotted-box.html' %}"
+        "{{ title }}"
+        "{% endblockinclude %}"
+    )
+
     TEMPLATE_WITH_HEADER_SLOT = (
         "{% load blockinclude %}"
         "{% blockinclude 'includes/the-slotted-box.html' %}"
@@ -26,6 +33,25 @@ class TestBlockIncludeNodeReuse(django.test.SimpleTestCase):
         "Content"
         "{% endblockinclude %}"
     )
+
+    def test_render_template_twice_with_different_context(self) -> None:
+        """
+        Rendering the same template node twice with different contexts should
+        reflect the context of each render.
+        """
+        template = django.template.Template(self.TEMPLATE_WITH_HEADER_SLOT)
+
+        first_output = template.render(
+            django.template.Context({"title": "First Title"})
+        )
+        second_output = template.render(
+            django.template.Context({"title": "Second Title"})
+        )
+
+        self.assertIn("First Title", first_output)
+        # Second render must reflect the second context, not the first.
+        self.assertIn("Second Title", second_output)
+        self.assertNotIn("First Title", second_output)
 
     def test_second_render_with_different_context_reflects_updated_slot_content(
         self,
