@@ -10,7 +10,7 @@ class TestBlockIncludeNodeReuse(django.test.SimpleTestCase):
     node list, and rendering of that node list with a given context. For performance
     reasons, Django caches the result of the template parsing, the list of node
     instances. This means our nodes need to be safe to be reused and rendered with
-    different contexts. The following tests check that our nodes are safe for reeated
+    different contexts. The following tests check that our nodes are safe for repeated
     rendering with different contexts.
     """
 
