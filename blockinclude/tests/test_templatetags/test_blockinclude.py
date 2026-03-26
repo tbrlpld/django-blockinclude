@@ -93,3 +93,26 @@ class TestBlockIncludeNodeReuse(django.test.SimpleTestCase):
         # When no "title" variable is in the context, the slot content is empty. We
         # should not find the previously used content anymore.
         self.assertNotIn("Title value", second_output)
+
+    def test_second_render_with_slot_content_changed_to_different_value(
+        self,
+    ) -> None:
+        """
+        When the same template node is reused for another render call, stale
+        slot content from a previous render must not bleed through.
+        """
+        template = django.template.Template(self.TEMPLATE_WITH_HEADER_SLOT)
+
+        # First render populates the content with a "title" variable.
+        first_output = template.render(
+            django.template.Context({"title": "First title"})
+        )
+        # Second render populates the content with a different value for the "title"
+        # variable.
+        second_output = template.render(
+            django.template.Context({"title": "Second title"})
+        )
+
+        self.assertIn("First title", first_output)
+        self.assertNotIn("First title", second_output)
+        self.assertIn("Second title", second_output)
