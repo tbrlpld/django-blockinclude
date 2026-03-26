@@ -4,14 +4,21 @@
 
 {% block content %}
     <p>
-        When the parent template defines a <code>content</code> variable, this is overridden by the  <code>blockinclude</code> tag.
+        When the parent template defines a <code>content</code> variable, this is overridden by the content of the <code>blockinclude</code> when the template is included.
+        In the parent itself, the variable is not affected by that.
     </p>
 
     <div>
         {% with content="Adipisci atque aut incidunt" %}
-            {% blockinclude 'includes/the-slotted-box.html' only %}
+            {% blockinclude 'includes/the-slotted-box.html' %}
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit.
             {% endblockinclude %}
+
+            <hr>
+
+            <div id="content-output-in-parent" class="output">
+                {{ content }}
+            </div>
         {% endwith %}
     </div>
 {% endblock %}
