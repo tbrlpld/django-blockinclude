@@ -56,7 +56,7 @@ class BlockInclude(django.template.loader_tags.IncludeNode):
         variables passed as keyword arguments.
         """
 
-        include_context_data: dict[str, django.utils.safestring.SafeString] = {}
+        include_context_data: dict[str, "django.utils.safestring.SafeString"] = {}
 
         # Render content "in place" with context of parent. Save as the `content`
         # variable to the context in which the include tag is rendered. We have set up
