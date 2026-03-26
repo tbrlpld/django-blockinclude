@@ -10,12 +10,12 @@ import django.test
 
 class TestTemplates(django.test.SimpleTestCase):
     """
-    These test rely on some of the setup being done in the template. When writing of
-    reviewing these tests, be sure to also take a look at rendered templates.
+    These test rely on some of the setup being done in the template. When writing or
+    reviewing these tests, be sure to also take a look at the rendered templates.
 
-    A lot of these test rely on features of the template language and try to test its
-    behavior. It would have been too cumbersome to try make all of that work with all
-    the setup in and assertion in Python.
+    A lot of these tests rely on features of the template language and try to test its
+    behavior. It would have been too cumbersome to try making all of that work with all
+    the setup and assertions in Python.
     """
 
     @staticmethod
