@@ -1,7 +1,6 @@
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Any, cast
 
 import django.template
-import django.template.base
 import django.template.loader_tags
 
 
@@ -19,16 +18,29 @@ SLOT_END_TAG = "endslot"
 register = django.template.library.Library()
 
 
-class BlockInclude(django.template.base.Node):
+class BlockInclude(django.template.loader_tags.IncludeNode):
+
     def __init__(
         self,
-        include_node: django.template.loader_tags.IncludeNode,
+        template: django.template.base.FilterExpression,
+        *args: Any,
         content_nodelist: django.template.NodeList,
         slot_nodes: list["SlotNode"],
+        extra_context: dict[Any, Any] | None = None,
+        isolated_context: bool = False,
+        **kwargs: Any,
     ) -> None:
-        self.include_node = include_node
+        # Store the content nodelist. The rest of the initialization is handled by the
+        # IncludeNode.
         self.content_nodelist = content_nodelist
         self.slot_nodes = slot_nodes
+        super().__init__(
+            template,
+            *args,
+            extra_context=extra_context,
+            isolated_context=isolated_context,
+            **kwargs,
+        )
 
     def render(
         self,
@@ -66,15 +78,7 @@ class BlockInclude(django.template.base.Node):
         # manager so that after the end of the function, our custom context data is
         # removed from the context again. This avoids "poisoning" the parent context.
         with context.update(include_context_data):
-            # Pass metadata attached to this node to the inner include node. This
-            # metadata is attached to the node when a template is turned into a
-            # nodelist. This process only has access to the outer node and not to the
-            # inner one. Thus, we need to forward that metadata to the inner node.
-            if not hasattr(self.include_node, "origin") and hasattr(self, "origin"):
-                self.include_node.origin = self.origin
-            if not hasattr(self.include_node, "token") and hasattr(self, "token"):
-                self.include_node.token = cast(django.template.base.Token, self.token)
-            return self.include_node.render(context)
+            return super().render(context)
 
 
 @register.tag(name=BLOCKINCLUDE_START_TAG)
@@ -121,9 +125,11 @@ def do_block_include(
     # Construct our own node with the properties of the IncludeNode. Our node is based
     # on the IncludeNode and lets it handle the default include functionality.
     return BlockInclude(
-        include_node=include_node,
+        template=include_node.template,
         content_nodelist=content_nodelist,
         slot_nodes=slot_nodes,
+        extra_context=extra_context,
+        isolated_context=include_node.isolated_context,
     )
 
 
