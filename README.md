@@ -148,7 +148,7 @@ Sometimes you may want to confirm the rendering in the browser with your own eye
 You can run the example app with:
 
 ```sh
-$ ./testmanage.py runserver 0:8000
+$ ./testmanage.py runserver 8000
 ```
 
 Now you can visit the app in the browser at `http://localhost:8000/`.
