@@ -1,14 +1,13 @@
 import dataclasses
 import os
+import pathlib
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 import django.http
+import django.shortcuts
 import django.template
 import django.urls
-
-from django.shortcuts import render
 
 
 if TYPE_CHECKING:
@@ -24,7 +23,7 @@ class Link:
 def index(request: "HttpRequest") -> "HttpResponse":
     """Render a page with all examples."""
 
-    views_filepath = Path(__file__)
+    views_filepath = pathlib.Path(__file__)
     test_template_dir = views_filepath.parent / "templates/tests"
     test_template_filenames = os.listdir(test_template_dir)
 
@@ -37,7 +36,7 @@ def index(request: "HttpRequest") -> "HttpResponse":
         if not ttf.startswith("_")
     ]
 
-    return render(
+    return django.shortcuts.render(
         request,
         template_name="pages/index.html",
         context={"links": links},
@@ -54,7 +53,7 @@ def render_test_template(request: "HttpRequest", filename: str) -> "HttpResponse
     title = get_title_from_filename(filename)
 
     try:
-        return render(
+        return django.shortcuts.render(
             request,
             template_name=f"tests/{filename}",
             context={
