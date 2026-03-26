@@ -1,6 +1,7 @@
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, cast
 
 import django.template
+import django.template.base
 import django.template.loader_tags
 
 
@@ -23,12 +24,12 @@ class BlockInclude(django.template.loader_tags.IncludeNode):
     def __init__(
         self,
         template: django.template.base.FilterExpression,
-        *args: Any,
+        *args: object,
         content_nodelist: django.template.NodeList,
         slot_nodes: list["SlotNode"],
-        extra_context: dict[Any, Any] | None = None,
+        extra_context: dict[str, django.template.base.FilterExpression] | None = None,
         isolated_context: bool = False,
-        **kwargs: Any,
+        **kwargs: object,
     ) -> None:
         # Store the content nodelist. The rest of the initialization is handled by the
         # IncludeNode.
