@@ -8,6 +8,7 @@ import django.http
 import django.shortcuts
 import django.template
 import django.urls
+import django.utils.html
 
 
 if TYPE_CHECKING:
@@ -43,12 +44,17 @@ def index(request: "HttpRequest") -> "HttpResponse":
     )
 
 
+class HttpResponseTemplateNotFound(django.http.HttpResponseNotFound):
+    def __init__(self, *, filename: str) -> None:
+        filename = django.utils.html.escape(filename)
+        super().__init__(content=f"Requested test template not found: {filename}")
+
+
 def render_test_template(request: "HttpRequest", filename: str) -> "HttpResponse":
     """Render the requested test template."""
+
     if filename.startswith("_"):
-        return django.http.HttpResponseNotFound(
-            f"Requested test template not found: {filename}"
-        )
+        return HttpResponseTemplateNotFound(filename=filename)
 
     title = get_title_from_filename(filename)
 
@@ -65,9 +71,7 @@ def render_test_template(request: "HttpRequest", filename: str) -> "HttpResponse
             },
         )
     except django.template.TemplateDoesNotExist:
-        return django.http.HttpResponseNotFound(
-            f"Requested test template not found: {filename}"
-        )
+        return HttpResponseTemplateNotFound(filename=filename)
 
 
 def get_title_from_filename(filename: str) -> str:
