@@ -5,14 +5,14 @@
 {% block content %}
     <p>
         When more than one variable needs to be filled with markup, <code>blockinclude</code> runs into the same issue as the default <code>include</code> tag.
-        Single markup lines can be provided as a keyword argument after the `with` keyword in the tag.
+        Single markup lines can be provided as a keyword argument after the <code>with</code> keyword in the tag.
         But, multi-line markup or even template logic would not work.
     </p>
 
     <p>
         This is where the <code>slot</code> tag comes in.
         Inside of <code>blockinclude</code>, you wrap a block of markup in a <code>slot</code>/<code>endslot</code> block.
-        The markup in the slot block is available in the included template as a variable with the name of the slot.
+        The markup in the <code>slot</code> block is available in the included template as a variable with the name of the slot.
         All other markup in the <code>blockinclude</code>, that is outside the <code>slot</code> block, is still passed as the <code>content</code> variable.
     </p>
 
