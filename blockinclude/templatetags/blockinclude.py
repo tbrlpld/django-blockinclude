@@ -1,6 +1,5 @@
 from typing import TYPE_CHECKING, cast
 
-import django.template
 import django.template.base
 import django.template.loader_tags
 
@@ -25,7 +24,7 @@ class BlockInclude(django.template.loader_tags.IncludeNode):
         self,
         template: django.template.base.FilterExpression,
         *args: object,
-        content_nodelist: django.template.NodeList,
+        content_nodelist: django.template.base.NodeList,
         slot_nodes: list["SlotNode"],
         extra_context: dict[str, django.template.base.FilterExpression] | None = None,
         isolated_context: bool = False,
