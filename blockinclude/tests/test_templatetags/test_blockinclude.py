@@ -96,7 +96,7 @@ class TestBlockIncludeNodeReuse(django.test.SimpleTestCase):
         Instead we simulate it by rendering the same Template twice, where the
         second context omits the variable used inside the slot.
         """
-        template = django.template.Template(self.TEMPLATE_WITH_HEADER_SLOT)
+        template = django.template.Template(self.TEMPLATE_WITH_VARIABLE_IN_BLOCK)
 
         # First render populates the header slot.
         first_output = template.render(
