@@ -16,7 +16,7 @@ class TestBlockIncludeNodeReuse(django.test.SimpleTestCase):
 
     TEMPLATE_WITH_VARIABLE_IN_BLOCK = (
         "{% load blockinclude %}"
-        "{% blockinclude 'includes/the-slotted-box.html' %}"
+        "{% blockinclude 'includes/the-box.html' %}"
         "{{ title }}"
         "{% endblockinclude %}"
     )
@@ -39,17 +39,17 @@ class TestBlockIncludeNodeReuse(django.test.SimpleTestCase):
         """
         template = django.template.Template(self.TEMPLATE_WITH_VARIABLE_IN_BLOCK)
 
-        # First render populates the header slot.
+        # First render populates the content with a "title" variable.
         first_output = template.render(
-            django.template.Context({"title": "Persistent Title"})
+            django.template.Context({"title": "Title value"})
         )
         # Second render uses a context without "title".
         second_output = template.render(django.template.Context({}))
 
-        self.assertIn("Persistent Title", first_output)
-        # Without a title in context the slot renders an empty string; the
-        # included template should therefore not render a header section.
-        self.assertNotIn("Persistent Title", second_output)
+        self.assertIn("Title value", first_output)
+        # When no "title" variable is in the context, the blocks content is empty. We
+        # should not find the previously used content anymore.
+        self.assertNotIn("Title value", second_output)
 
     def test_render_template_twice_with_different_context(self) -> None:
         """
