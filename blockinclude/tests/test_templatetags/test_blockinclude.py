@@ -78,23 +78,13 @@ class TestBlockIncludeNodeReuse(django.test.SimpleTestCase):
         self.assertIn("Second Title", second_output)
         self.assertNotIn("First Title", second_output)
 
-    def test_second_render_with_no_slot_content_does_not_show_previous_slot(
+    def test_second_render_with_changed_context(
         self,
     ) -> None:
         """
         When the same template node is reused for a different blockinclude
         call (without a slot), stale slot content from a previous render must
         not bleed through.
-
-        This demonstrates the ``self.extra_context`` mutation bug: after the
-        first render the header key remains in ``extra_context``, so the second
-        render unexpectedly displays a header even though no slot is defined.
-
-        Note: this scenario requires two *different* Template objects whose
-        BlockInclude nodes share the same ``extra_context`` dict — which is
-        exactly what happens when the parser reuses cached node instances.
-        Instead we simulate it by rendering the same Template twice, where the
-        second context omits the variable used inside the slot.
         """
         template = django.template.Template(self.TEMPLATE_WITH_VARIABLE_IN_BLOCK)
 
