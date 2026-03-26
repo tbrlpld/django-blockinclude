@@ -124,6 +124,10 @@ def do_block_include(
 
     # Construct our own node with the properties of the IncludeNode. Our node is based
     # on the IncludeNode and lets it handle the default include functionality.
+    # The `template`, `extra_context`, and `isolated_context` attributes are the only
+    # ones defined on `IncludeNode.__init__` (besides `*args`/`**kwargs` forwarded to
+    # `Node`). See:
+    # https://github.com/django/django/blob/f2169ef/django/template/loader_tags.py#L166-L172
     return BlockInclude(
         template=include_node.template,
         content_nodelist=content_nodelist,
