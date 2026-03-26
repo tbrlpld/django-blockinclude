@@ -10,7 +10,7 @@ import django.test
 
 class TestTemplates(django.test.SimpleTestCase):
     """
-    These test rely on some of the setup being done in the template. When writing or
+    These tests rely on some of the setup being done in the template. When writing or
     reviewing these tests, be sure to also take a look at the rendered templates.
 
     A lot of these tests rely on features of the template language and try to test its
@@ -256,7 +256,7 @@ class TestTemplates(django.test.SimpleTestCase):
         self.assertStringInTag(string="Phasellus", tag=header)
         self.assertIsNone(the_box.footer)
 
-    def test_contentn_variable_in_parent(self) -> None:
+    def test_content_variable_in_parent(self) -> None:
         soup = self.get_soup_for_template(
             template_name="tests/test-16-content-variable-in-parent.html",
         )
