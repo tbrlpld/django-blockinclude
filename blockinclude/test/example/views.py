@@ -24,9 +24,7 @@ class Link:
 def index(request: "HttpRequest") -> "HttpResponse":
     """Render a page with all examples."""
 
-    views_filepath = pathlib.Path(__file__)
-    test_template_dir = views_filepath.parent / "templates/tests"
-    test_template_filenames = os.listdir(test_template_dir)
+    test_template_filenames = get_test_template_filenames()
 
     links = [
         Link(
@@ -53,27 +51,32 @@ class HttpResponseTemplateNotFound(django.http.HttpResponseNotFound):
 def render_test_template(request: "HttpRequest", filename: str) -> "HttpResponse":
     """Render the requested test template."""
 
-    if filename.startswith("_"):
+    allowed_filenames = get_test_template_filenames()
+    if filename not in allowed_filenames:
         return HttpResponseTemplateNotFound(filename=filename)
 
     title = get_title_from_filename(filename)
 
-    try:
-        return django.shortcuts.render(
-            request,
-            template_name=f"tests/{filename}",
-            context={
-                "title": title,
-                "items": [
-                    "Lorem",
-                    "Ipsum",
-                ],
-            },
-        )
-    except django.template.TemplateDoesNotExist:
-        return HttpResponseTemplateNotFound(filename=filename)
+    return django.shortcuts.render(
+        request,
+        template_name=f"tests/{filename}",
+        context={
+            "title": title,
+            "items": [
+                "Lorem",
+                "Ipsum",
+            ],
+        },
+    )
 
 
 def get_title_from_filename(filename: str) -> str:
     title = filename[8:-5].replace("-", " ").title()
     return title
+
+
+def get_test_template_filenames() -> tuple[str, ...]:
+    views_filepath = pathlib.Path(__file__)
+    test_template_dir = views_filepath.parent / "templates/tests"
+    test_template_filenames = os.listdir(test_template_dir)
+    return tuple(test_template_filenames)
