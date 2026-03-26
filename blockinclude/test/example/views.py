@@ -48,8 +48,7 @@ def render_test_template(request: "HttpRequest", filename: str) -> "HttpResponse
     """Render the requested test template."""
     if filename.startswith("_"):
         return django.http.HttpResponseNotFound(
-            "Requested test template not found.",
-            filename,
+            f"Requested test template not found: {filename}"
         )
 
     title = get_title_from_filename(filename)
@@ -68,8 +67,7 @@ def render_test_template(request: "HttpRequest", filename: str) -> "HttpResponse
         )
     except django.template.TemplateDoesNotExist:
         return django.http.HttpResponseNotFound(
-            "Requested test template not found.",
-            filename,
+            f"Requested test template not found: {filename}"
         )
 
 
