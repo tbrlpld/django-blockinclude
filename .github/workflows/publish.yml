@@ -1,6 +1,8 @@
 # See https://packaging.python.org/en/latest/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows/
 # for a detailed guide
 name: Publish to PyPI
+permissions:
+  contents: read
 
 on:
   release:
