@@ -29,6 +29,28 @@ class TestBlockIncludeNodeReuse(django.test.SimpleTestCase):
         "{% endblockinclude %}"
     )
 
+    def test_second_render_with_changed_context(
+        self,
+    ) -> None:
+        """
+        When the same template node is reused for a different blockinclude
+        call (without a slot), stale slot content from a previous render must
+        not bleed through.
+        """
+        template = django.template.Template(self.TEMPLATE_WITH_VARIABLE_IN_BLOCK)
+
+        # First render populates the header slot.
+        first_output = template.render(
+            django.template.Context({"title": "Persistent Title"})
+        )
+        # Second render uses a context without "title".
+        second_output = template.render(django.template.Context({}))
+
+        self.assertIn("Persistent Title", first_output)
+        # Without a title in context the slot renders an empty string; the
+        # included template should therefore not render a header section.
+        self.assertNotIn("Persistent Title", second_output)
+
     def test_render_template_twice_with_different_context(self) -> None:
         """
         Rendering the same template node twice with different contexts should
@@ -77,25 +99,3 @@ class TestBlockIncludeNodeReuse(django.test.SimpleTestCase):
         # Second render must reflect the second context, not the first.
         self.assertIn("Second Title", second_output)
         self.assertNotIn("First Title", second_output)
-
-    def test_second_render_with_changed_context(
-        self,
-    ) -> None:
-        """
-        When the same template node is reused for a different blockinclude
-        call (without a slot), stale slot content from a previous render must
-        not bleed through.
-        """
-        template = django.template.Template(self.TEMPLATE_WITH_VARIABLE_IN_BLOCK)
-
-        # First render populates the header slot.
-        first_output = template.render(
-            django.template.Context({"title": "Persistent Title"})
-        )
-        # Second render uses a context without "title".
-        second_output = template.render(django.template.Context({}))
-
-        self.assertIn("Persistent Title", first_output)
-        # Without a title in context the slot renders an empty string; the
-        # included template should therefore not render a header section.
-        self.assertNotIn("Persistent Title", second_output)
