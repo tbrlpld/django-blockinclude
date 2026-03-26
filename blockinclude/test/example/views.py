@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING
 
 import django.http
 import django.shortcuts
-import django.template
 import django.urls
 import django.utils.html
 
