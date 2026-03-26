@@ -4,19 +4,14 @@ import django.test
 
 class TestBlockIncludeNodeReuse(django.test.SimpleTestCase):
     """
-    Tests that expose state mutation bugs in BlockInclude.render().
+    Test repeat rendering of a given template using the blockinclude tag.
 
-    Template nodes are reused across renders when the template is cached (e.g.
-    via Django's cached template loader or when a Template object is rendered
-    more than once). The current implementation mutates instance state during
-    render(), which causes incorrect behavior on subsequent renders of the same
-    template node:
-
-    1. ``self.content_nodelist.remove(slot)`` permanently removes SlotNode
-       objects from the nodelist, so slot content is missing on subsequent
-       renders.
-    2. ``self.extra_context`` is mutated in place and persists between renders,
-       so stale rendered content from a previous render leaks into later ones.
+    Template rendering is split into two steps. Parsing of the template string into a
+    node list, and rendering of that node list with a given context. For performance
+    reasons, Django caches the result of the template parsing, the list of node
+    instances. This means our nodes need to be safe to be reused and rendered with
+    different contexts. The following tests check that our nodes are safe for reeated
+    rendering with different contexts.
     """
 
     TEMPLATE_WITH_VARIABLE_IN_BLOCK = (
