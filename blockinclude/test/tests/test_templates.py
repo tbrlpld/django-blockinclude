@@ -113,8 +113,7 @@ class TestTemplates(django.test.SimpleTestCase):
 
         the_box = self.get_included_box(soup=soup)
         # The content is found in the box.
-        box_content = the_box.find(string=re.compile("Lorem"))
-        self.assertIsNotNone(box_content)
+        self.assertStringInTag(string="Lorem", tag=the_box)
         # The content is not found in the output container in the parent template.
         output = soup.find(id="content-output-in-parent")
         output = self.assertIsTag(output)
@@ -265,3 +264,17 @@ class TestTemplates(django.test.SimpleTestCase):
         div = self.assertIsTag(the_box.div)
         self.assertStringNotInTag(string="Adipisci", tag=div)
         self.assertStringInTag(string="Lorem", tag=div)
+
+    def test_slot_does_not_pollute_parent_context(self) -> None:
+        soup = self.get_soup_for_template(
+            template_name="tests/test-17-slot-does-not-pollute-parent-context.html",
+        )
+
+        the_box = self.get_included_box(soup=soup)
+        header = self.assertIsTag(the_box.header)
+        # The content is found in the header of the box.
+        self.assertStringInTag(string="Phasellus ", tag=header)
+        # The content is not found in the output container in the parent template.
+        output = soup.find(id="content-output-in-parent")
+        output = self.assertIsTag(output)
+        self.assertStringNotInTag(string="Phasellus ", tag=output)
