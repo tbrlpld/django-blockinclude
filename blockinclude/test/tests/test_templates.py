@@ -278,3 +278,18 @@ class TestTemplates(django.test.SimpleTestCase):
         output = soup.find(id="content-output-in-parent")
         output = self.assertIsTag(output)
         self.assertStringNotInTag(string="Phasellus ", tag=output)
+
+    def test_conditionally_excluded_slot(self) -> None:
+        soup = self.get_soup_for_template(
+            template_name="tests/test-18-conditionally-excluded-slot.html",
+        )
+
+        the_box = self.get_included_box(soup=soup)
+        self.assertStringInTag(string="Lorem", tag=the_box)
+        # The `header` slot definition is excluded conditionally in the parent. Thus,
+        # the `header` variable should not be passed to the included template. This in
+        # turn means that the header will not be rendered, because in
+        # `the-slotted-box.html` the `<header>` is only rendered when the `header`
+        # component is present.
+        header = the_box.find("header")
+        self.assertIsNone(header)

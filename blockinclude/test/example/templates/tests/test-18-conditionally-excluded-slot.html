@@ -1,0 +1,21 @@
+{% extends '_test-base.html' %}
+
+{% load blockinclude %}
+
+{% block content %}
+    <p>
+        The content of the <code>slot</code> tag, is made available in the included template as a variable matching the slot name.
+    </p>
+
+    <div>
+        {% blockinclude 'includes/the-slotted-box.html' %}
+            {% if False %}
+                {% slot header %}
+                    Phasellus nulla justo, dictum eu diam non, congue consequat ipsum.
+                {% endslot %}
+            {% endif %}
+
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        {% endblockinclude %}
+    </div>
+{% endblock %}
