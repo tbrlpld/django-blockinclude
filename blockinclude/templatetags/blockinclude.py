@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 
 import django.template.base
 import django.template.loader_tags
@@ -108,8 +108,10 @@ def do_block_include(
         )
     )
 
-    # We do the same for each slot.
-    slot_nodes = cast(list[SlotNode], content_nodelist.get_nodes_by_type(SlotNode))
+    # We do the same for each slot. Using a list comprehension instead of
+    # `content_nodelist.get_nodes_by_type(...)`, because the method works recursively.
+    # We are only interested in the direct children of the `blockinclude`.
+    slot_nodes = [n for n in content_nodelist if isinstance(n, SlotNode)]
     for slot_node in slot_nodes:
         # Remove the slot nodes from the content nodelist so they are not rendered
         # as part of the main content.
