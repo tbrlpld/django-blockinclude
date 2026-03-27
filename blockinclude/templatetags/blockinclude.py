@@ -76,7 +76,7 @@ class BlockInclude(django.template.loader_tags.IncludeNode):
 
         # Create a new layer of context with the new data in it. We use a context
         # manager so that after the end of the function, our custom context data is
-        # removed from the context again. This avoids "poisoning" the parent context.
+        # removed from the context again. This avoids "polluting" the parent context.
         with context.update(include_context_data):
             return super().render(context)
 
