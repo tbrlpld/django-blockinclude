@@ -4,7 +4,9 @@
 
 {% block content %}
     <p>
-        The content of the <code>slot</code> tag, is made available in the included template as a variable matching the slot name.
+        When the <code>slot</code> is nested inside of a <code>if</code> block or similar, then it is not the child of the <code>blockinclude</code> anymore.
+        In those cases, it is not rendered, and the variables are not available in the included template.
+        If you need to conditionally change the content of a <code>slot</code>, do that inside of the <code>slot</code>.
     </p>
 
     <div>
