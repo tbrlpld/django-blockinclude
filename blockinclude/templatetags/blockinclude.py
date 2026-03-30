@@ -101,8 +101,8 @@ def do_block_include(
         django.template.loader_tags.do_include(parser, token)
     )
 
-    # We update the extra context (the stuff passed as keyword arguments) so that is
-    # it expects a `content` variable in the context in which the include node is
+    # We update the extra context (the stuff passed as keyword arguments) so that it
+    # expects a `content` variable in the context in which the include node is
     # rendered. Basically as if `{% include "..." with content=content %}` was used.
     extra_context = include_node.extra_context
     extra_context[BLOCKINCLUDE_CONTENT_VAR_NAME] = (
@@ -114,7 +114,8 @@ def do_block_include(
 
     # We do the same for each slot. Using a list comprehension instead of
     # `content_nodelist.get_nodes_by_type(...)`, because the method works recursively.
-    # We are only interested in the direct children of the `blockinclude`.
+    # We are only interested in the direct children of the `blockinclude`. This is to
+    # avoid removing slots that may be nested inside a if block.
     slot_nodes = [n for n in content_nodelist if isinstance(n, SlotNode)]
     for slot_node in slot_nodes:
         # Remove the slot nodes from the content nodelist so they are not rendered
