@@ -280,24 +280,29 @@ class TestTemplates(django.test.SimpleTestCase):
         self.assertStringNotInTag(string="Phasellus ", tag=output)
 
     def test_conditional_slots(self) -> None:
+        """
+        When slots are wrapped inside an `if` block they won't be available in the
+        included template.
+
+        That is because the `slot` needs to be a direct child of the `blockinclude`.
+
+        Conditional content changes should be defined inside the `slot`.
+        """
         soup = self.get_soup_for_template(
             template_name="tests/test-18-conditional-slots.html",
         )
 
         the_box = self.get_included_box(soup=soup)
         self.assertStringInTag(string="Lorem", tag=the_box)
-        # The `header` slot definition is excluded conditionally in the parent. Thus,
-        # the `header` variable should not be passed to the included template. This in
-        # turn means that the header will not be rendered, because in
-        # `the-slotted-box.html` the `<header>` is only rendered when the `header`
-        # component is present.
+        # The `header` slot definition is excluded conditionally in the parent. We won't
+        # find the output.
         header = the_box.find("header")
         self.assertIsNone(header)
-        # The `footer` on the other hand is populated by a slot that is conditionally
-        # included.
+        # The `footer` slot definition, on the other hand, is wrapped in a truhty
+        # condition. However, we still won't find it in the output. That is because
+        # `slot` tags need to be defined as direct children of the `blockinclude`.
         footer = the_box.find("footer")
-        footer = self.assertIsTag(footer)
-        self.assertStringInTag(string="Minima", tag=footer)
+        self.assertIsNone(footer)
 
     def test_slot_outside_blockinclude(self) -> None:
         """
