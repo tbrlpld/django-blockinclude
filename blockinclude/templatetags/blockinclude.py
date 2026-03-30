@@ -21,7 +21,6 @@ register = django.template.library.Library()
 
 
 class BlockInclude(django.template.loader_tags.IncludeNode):
-
     def __init__(
         self,
         template: django.template.base.FilterExpression,
@@ -185,7 +184,8 @@ def do_block_include(
     slot_nodes = [n for n in content_nodelist if isinstance(n, SlotNode)]
     for slot_node in slot_nodes:
         # Remove the slot nodes from the content nodelist so they are not rendered
-        # as part of the main content.
+        # as part of the main content. Slot nodes don't render themselves. But, we
+        # don't need to call them twice for no reason.
         content_nodelist.remove(slot_node)
 
         extra_context[slot_node.target_variable_name] = (
