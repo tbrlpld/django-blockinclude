@@ -293,3 +293,21 @@ class TestTemplates(django.test.SimpleTestCase):
         # component is present.
         header = the_box.find("header")
         self.assertIsNone(header)
+
+    def test_slot_outside_blockinclude(self) -> None:
+        """
+        When the slot is used outside the blockinclude tag, it should neither render
+        its output inplace nor add the content as a variable to the parent context
+        (pollute) which could be output in the parent elsewhere on accident.
+        """
+        soup = self.get_soup_for_template(
+            template_name="tests/test-19-slot-outside-blockinclude.html",
+        )
+
+        slot_container = soup.find(id="slot-container")
+        slot_container = self.assertIsTag(slot_container)
+        self.assertStringNotInTag(string="Phasellus ", tag=slot_container)
+        # The content is not found in the output container in the parent template.
+        output = soup.find(id="content-output-in-parent")
+        output = self.assertIsTag(output)
+        self.assertStringNotInTag(string="Phasellus ", tag=output)

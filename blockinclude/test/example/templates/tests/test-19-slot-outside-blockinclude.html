@@ -1,0 +1,22 @@
+{% extends '_test-base.html' %}
+
+{% load blockinclude %}
+
+{% block content %}
+    <p>
+        When the  <code>slot</code> tag is used outside the <code>blockinclude</code> tag, then it does nothing.
+        It does not render any output and it does not pollute the parent context.
+    </p>
+
+    <div id="slot-container" style="border: 1px solid currentColor; padding: 2rem;">
+        {% slot header %}
+            Phasellus nulla justo, dictum eu diam non, congue consequat ipsum.
+        {% endslot %}
+    </div>
+
+    <hr/>
+
+    <div id="content-output-in-parent" class="output">
+        {{ header }}
+    </div>
+{% endblock %}
