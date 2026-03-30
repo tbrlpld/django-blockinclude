@@ -90,6 +90,72 @@ def do_block_include(
     parser: django.template.base.Parser,
     token: django.template.base.Token,
 ) -> BlockInclude:
+    '''
+    Render block content and pass it as `content` variable to the included template.
+
+    This is an extension of Django's default `include` tag and supports all of its
+    features. Additionally, it allows you to pass a block of rendered markup to the
+    included template.
+
+    ```django
+    {% blockinclude "my-box.html" %}
+        The body content of the box.
+    {% endblockinclude %}
+    ```
+
+    In the above example, the `my-box.html` template will have a `content` variable
+    with the value `"The body content of the box."` in the context.
+
+    The content can include any sort of HTML markup you like.
+
+    If you use template logic between the `blockinclude`/`endblockinclude` tags, then
+    the that logic is evaluated in the context of the parent and then passed to the
+    included template.
+
+    ```django
+    {% blockinclude "my-box.html" %}
+        <ul>
+            {% for item in items %}
+                <li>{{ item }}</li>
+            {% endfor %}
+        </ul>
+    {% endblockinclude %}
+    ```
+
+    If the parent is rendered with `items = ["Apple", "Banana"]` in the context,
+    then the included template will receive the `content` variable` with the value:
+
+    ```python
+    """
+    <ul>
+        <li>Apple</li>
+        <li>Banana</li>
+    </ul>
+    """
+    ```
+
+    If you wish to pass more than one block of markup with different names to the
+    included template, you can add `slot` tags inside the `blockinclude`.
+
+    ```django
+    {% blockinclude "my-slotted-box.html" %}
+        {% slot header %}
+            Header of the box
+        {% endslot %}
+
+        The body content of the box.
+    {% endblockinclude %}
+    ```
+
+    In the above example, the `my-slotted-box.html` template will receive the variables
+    `content="The body content of the box."` and `header="Header of the box"`.
+
+    You can use as many `slot` tags inside a `blockinclude` as you like. The `slot`
+    does have to be a direct child of the `blockinclude` and can not be nested in other
+    template block tags (`if` or `for`) inside the `blockinclude`. The `blockinclude`
+    itself can be nested inside of other template tag blocks just fine.
+    '''
+
     # Grab the content
     content_nodelist = parser.parse((BLOCKINCLUDE_END_TAG,))
     # "Consume" the closing tag. Whatever that means. Including this based on the docs.
@@ -146,11 +212,11 @@ def do_block_include(
 
 class SlotNode(django.template.base.Node):
     """
-    Renders the content_node list in the current context.
+    Slot node to be consumed by the `BlockIncludeNode`.
 
-    Also carries a `target_variable_name` prop. That is the name of the variable that
-    the `BlockIncludeNode` should use to pass the rendered output to the included
-    template.
+    This node does not render or manipulate the context directly. It's basically a no-op
+    node. The point of the node is to make the template variable and content nodelist
+    available for consumption by a `BlockIncludeNode`.
     """
 
     def __init__(
@@ -165,6 +231,15 @@ class SlotNode(django.template.base.Node):
         self,
         context: django.template.context.Context,
     ) -> typing.Literal[""]:
+        """
+        No-op rendering.
+
+        We don't want rendering of the slot to accidentally be output or to pollute the
+        parent context. Thus, we always returns an empty string and perform no context
+        side effects.
+
+        To access the rendered contents of the node, use the `render_content` method.
+        """
         return ""
 
     def render_content(
@@ -175,7 +250,7 @@ class SlotNode(django.template.base.Node):
         Alternative method to render the contents of the slot.
 
         We don't want rendering of the slot to accidentally be output or to pollute the
-        parent context. Thus, the default `redner` method always returns an empty
+        parent context. Thus, the default `render` method always returns an empty
         string and has no context side effects. If we really want the rendered contents,
         then this method should be used instead.
         """
@@ -187,6 +262,27 @@ def do_slot(
     parser: django.template.base.Parser,
     token: django.template.base.Token,
 ) -> SlotNode:
+    """
+    Define variable name for a markup block to the parent `blockinclude`.
+
+    Use this tag to create store a block of markup as a variable, with the name
+    provided as the argument to the tag. The variable is passed with the same name to
+    the template included by the surrounding `blockinclude`.
+
+    This tag needs to be used as a direct child of the `blockinclude`. Nesting it inside
+    other block tags (like `if`, `for` etc.) does not work.
+
+    Usage:
+    ```django
+    {% blockinclude "my-box.html" %}
+        {% slot header %}
+            Header of the box
+        {% endslot %}
+
+        The body content of the box.
+    {% endblockinclude %}
+    ```
+    """
     content_nodelist = parser.parse((SLOT_END_TAG,))
     parser.delete_first_token()
 
