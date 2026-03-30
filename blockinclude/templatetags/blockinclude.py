@@ -1,3 +1,5 @@
+import typing
+
 from typing import TYPE_CHECKING
 
 import django.template.base
@@ -72,7 +74,9 @@ class BlockInclude(django.template.loader_tags.IncludeNode):
                 # Ignore slots named the same as the main content variable. Ideally this
                 # does not get here, but ignoring those slots for good measure.
                 continue
-            include_context_data[slot.target_variable_name] = slot.render(context)
+            include_context_data[slot.target_variable_name] = slot.render_content(
+                context
+            )
 
         # Create a new layer of context with the new data in it. We use a context
         # manager so that after the end of the function, our custom context data is
@@ -159,12 +163,26 @@ class SlotNode(django.template.base.Node):
     def render(
         self,
         context: django.template.context.Context,
+    ) -> typing.Literal[""]:
+        return ""
+
+    def render_content(
+        self,
+        context: django.template.context.Context,
     ) -> "django.utils.safestring.SafeString":
+        """
+        Alternative method to render the contents of the slot.
+
+        We don't want rendering of the slot to accidentally be output or to pollute the
+        parent context. Thus, the default `redner` method always returns an empty
+        string and has no context side effects. If we really want the rendered contents,
+        then this method should be used instead.
+        """
         return self.content_nodelist.render(context)
 
 
 @register.tag(name=SLOT_START_TAG)
-def do_store_content(
+def do_slot(
     parser: django.template.base.Parser,
     token: django.template.base.Token,
 ) -> SlotNode:
