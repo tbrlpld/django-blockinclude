@@ -16,6 +16,12 @@
             {% endif %}
 
             Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+
+            {% if True %}
+                {% slot footer %}
+                    Minima modi non quia.
+                {% endslot %}
+            {% endif %}
         {% endblockinclude %}
     </div>
 {% endblock %}

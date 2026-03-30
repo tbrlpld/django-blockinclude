@@ -279,9 +279,9 @@ class TestTemplates(django.test.SimpleTestCase):
         output = self.assertIsTag(output)
         self.assertStringNotInTag(string="Phasellus ", tag=output)
 
-    def test_conditionally_excluded_slot(self) -> None:
+    def test_conditional_slots(self) -> None:
         soup = self.get_soup_for_template(
-            template_name="tests/test-18-conditionally-excluded-slot.html",
+            template_name="tests/test-18-conditional-slots.html",
         )
 
         the_box = self.get_included_box(soup=soup)
@@ -293,6 +293,11 @@ class TestTemplates(django.test.SimpleTestCase):
         # component is present.
         header = the_box.find("header")
         self.assertIsNone(header)
+        # The `footer` on the other hand is populated by a slot that is conditionally
+        # included.
+        footer = the_box.find("footer")
+        footer = self.assertIsTag(footer)
+        self.assertStringInTag(string="Minima", tag=footer)
 
     def test_slot_outside_blockinclude(self) -> None:
         """
