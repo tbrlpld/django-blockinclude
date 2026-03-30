@@ -57,25 +57,31 @@ class BlockInclude(django.template.loader_tags.IncludeNode):
         variables passed as keyword arguments.
         """
 
+        include_context_data: dict[str, "django.utils.safestring.SafeString"] = {}
+
+        # Render content "in place" with context of parent. Save as the `content`
+        # variable to the context in which the include tag is rendered. We have set up
+        # the extra context of the include tag as if it used
+        # `{% include "..." with content=content %}. Now we are making sure that the
+        # `content` variable can be resolved from the context.
+        include_context_data[BLOCKINCLUDE_CONTENT_VAR_NAME] = (
+            self.content_nodelist.render(context)
+        )
+
+        # Do the same for the slot nodes
+        for slot in self.slot_nodes:
+            if slot.target_variable_name == BLOCKINCLUDE_CONTENT_VAR_NAME:
+                # Ignore slots named the same as the main content variable. Ideally this
+                # does not get here, but ignoring those slots for good measure.
+                continue
+            include_context_data[slot.target_variable_name] = slot.render_content(
+                context
+            )
+
         # Create a new layer of context with the new data in it. We use a context
         # manager so that after the end of the function, our custom context data is
         # removed from the context again. This avoids "polluting" the parent context.
-        with context.push():
-            # Render content "in place" with context of parent. Save as the `content`
-            # variable to the context in which the include tag is rendered. We have set up
-            # the extra context of the include tag as if it used
-            # `{% include "..." with content=content %}. Now we are making sure that the
-            # `content` variable can be resolved from the context.
-            context[BLOCKINCLUDE_CONTENT_VAR_NAME] = self.content_nodelist.render(
-                context
-            )
-            # for slot in self.slot_nodes:
-            #     if slot.target_variable_name == BLOCKINCLUDE_CONTENT_VAR_NAME:
-            #         # Ignore slots named the same as the main content variable. Ideally this
-            #         # does not get here, but ignoring those slots for good measure.
-            #         continue
-            #     slot.render(context)
-
+        with context.update(include_context_data):
             return super().render(context)
 
 
@@ -109,9 +115,13 @@ def do_block_include(
     # We do the same for each slot. Using a list comprehension instead of
     # `content_nodelist.get_nodes_by_type(...)`, because the method works recursively.
     # We are only interested in the direct children of the `blockinclude`. This is to
-    # avoid removing slots that may be nested inside an if block.
+    # avoid removing slots that may be nested inside a if block.
     slot_nodes = [n for n in content_nodelist if isinstance(n, SlotNode)]
     for slot_node in slot_nodes:
+        # Remove the slot nodes from the content nodelist so they are not rendered
+        # as part of the main content.
+        content_nodelist.remove(slot_node)
+
         extra_context[slot_node.target_variable_name] = (
             django.template.base.FilterExpression(
                 slot_node.target_variable_name,
@@ -155,8 +165,21 @@ class SlotNode(django.template.base.Node):
         self,
         context: django.template.context.Context,
     ) -> typing.Literal[""]:
-        context[self.target_variable_name] = self.content_nodelist.render(context)
         return ""
+
+    def render_content(
+        self,
+        context: django.template.context.Context,
+    ) -> "django.utils.safestring.SafeString":
+        """
+        Alternative method to render the contents of the slot.
+
+        We don't want rendering of the slot to accidentally be output or to pollute the
+        parent context. Thus, the default `redner` method always returns an empty
+        string and has no context side effects. If we really want the rendered contents,
+        then this method should be used instead.
+        """
+        return self.content_nodelist.render(context)
 
 
 @register.tag(name=SLOT_START_TAG)
