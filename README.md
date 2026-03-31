@@ -126,7 +126,7 @@ This template does not only use the `content` variable, but also the `header` va
 </div>
 ```
 
-Now, if we want to fill both of these variables with multiples lines of markup or template logic, we can include the template like so:
+Now, if we want to fill both of these variables with multiples lines of markup, we can include the template like so:
 
 ```django
 {# my-page.html #}
@@ -197,6 +197,9 @@ You can use as many `slot` tags inside a `blockinclude` as you like.
     {% endslot %}
 {% endblockinclude %}
 ```
+
+Just like the `blockinclude` itself, the content of the `slot` tag can be markup or even template logic.
+Template logic in a `slot` is executed with the context of the parent template, just like logic inside the `blockinclude`.
 
 ### Additional notes about tag usage
 
