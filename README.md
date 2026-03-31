@@ -29,6 +29,111 @@ Then, add to your installed apps:
 INSTALLED_APPS = [..., "blockinclude", ...]
 ```
 
+### Basic usage
+
+This is an extension of Django's default `include` tag and supports all of its features.
+Additionally, it allows you to pass a section of rendered markup to the included template.
+
+Let's presume we have the following template `my-box.html`:
+
+```django
+{# my-box.html #}
+
+<div class="p-12 border-2 border-black">
+    {{ content }}
+</div>
+```
+
+Now we want to fill the box with some content.
+To do that, you use the `blockinclude` tag and pass it the path to `my-box.html`, just like you would with the [default `include` tag](https://docs.djangoproject.com/en/stable/ref/templates/builtins/#include).
+Unlike the `include` tag, `blockinclude` is a block tag and comes with the `endblockinclude` end tag.
+This allows you to pass a block from the parent template (`my-page.html`) to be passed to the included template (`my-box.html`), like so:
+
+```django
+{# my-page.html #}
+
+{% load blockinclude %}
+
+{% blockinclude "my-box.html" %}
+    The body content of the box.
+{% endblockinclude %}
+```
+
+In the above example, the `my-box.html` template will have a `content` variable with the value `"The body content of the box."` in the context.
+Thus, the result of rendering `my-page.html` will be:
+
+```html
+<div class="p-12 border-2 border-black">
+    The body content of the box.
+</div>
+```
+
+Of course, with a single line of text, this is not very interesting.
+That would also be possible with a [keyword argument to the default `include` tag](https://docs.djangoproject.com/en/6.0/ref/templates/builtins/#:~:text=You%20can%20pass%20additional%20context%20to%20the%20template%20using%20keyword%20arguments).
+
+But, `blockinclude` is not limited to simple strings.
+You can wrap any HTML markup or even template logic between the opening and closing tags.
+
+The template logic is evaluated in the context of the parent (`my-page.html`) and then passed to the included template (`my-box.html`) as the `content` variable.
+
+```django
+{# my-page.html #}
+
+{% load blockinclude %}
+
+{% blockinclude "my-box.html" %}
+    <ul>
+        {% for item in items %}
+            <li>{{ item }}</li>
+        {% endfor %}
+    </ul>
+{% endblockinclude %}
+```
+
+If `my-page.html` is rendered with `items = ["Apple", "Banana"]` in the context, then rendered result will be:
+
+```html
+<div class="p-12 border-2 border-black">
+    <ul>
+        <li>Apple</li>
+        <li>Banana</li>
+    </ul>
+</div>
+```
+
+### Passing multiple sections with `slot`
+
+If you wish to pass more than one section of markup with different names to the included template, you can add `slot` tags inside the `blockinclude`.
+
+```django
+{# my-slotted-box.html #}
+
+<div class="p-12 border-2 border-black">
+    {% if header %}
+        <header>
+            {{ header }}
+        </header>
+    {% endif %}
+
+    {{ content }}
+</div>
+```
+
+```django
+{% blockinclude "my-slotted-box.html" %}
+    {% slot "header" %}
+        Header of the box
+    {% endslot %}
+
+    The body content of the box.
+{% endblockinclude %}
+```
+
+In the above example, the `my-slotted-box.html` template will receive the variables `content="The body content of the box."` and `header="Header of the box"`.
+
+You can use as many `slot` tags inside a `blockinclude` as you like.
+The `slot` does have to be a direct child of the `blockinclude` and can not be nested in other template block tags (`if` or `for`) inside the `blockinclude`.
+The `blockinclude` itself can be nested inside of other template tag blocks just fine.
 
 ## About Django Block Include
 
