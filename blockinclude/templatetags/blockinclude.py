@@ -124,7 +124,7 @@ def do_block_include(
     ```
 
     If the parent is rendered with `items = ["Apple", "Banana"]` in the context,
-    then the included template will receive the `content` variable` with the value:
+    then the included template will receive the `content` variable with the value:
 
     ```python
     """
