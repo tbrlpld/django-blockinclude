@@ -140,7 +140,7 @@ def do_block_include(
 
     ```django
     {% blockinclude "my-slotted-box.html" %}
-        {% slot header %}
+        {% slot "header" %}
             Header of the box
         {% endslot %}
 

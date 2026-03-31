@@ -22,20 +22,20 @@ class TestBlockIncludeNodeReuse(django.test.SimpleTestCase):
     rendering with different contexts.
     """
 
-    TEMPLATE_WITH_VARIABLE_IN_BLOCK = (
-        "{% load blockinclude %}"
-        "{% blockinclude 'includes/the-box.html' %}"
-        "{{ title }}"
-        "{% endblockinclude %}"
-    )
+    TEMPLATE_WITH_VARIABLE_IN_BLOCK = """
+        {% load blockinclude %}
+        {% blockinclude 'includes/the-box.html' %}
+            {{ title }}
+        {% endblockinclude %}
+        """
 
-    TEMPLATE_WITH_HEADER_SLOT = (
-        "{% load blockinclude %}"
-        "{% blockinclude 'includes/the-slotted-box.html' %}"
-        "{% slot header %}{{ title }}{% endslot %}"
-        "Content"
-        "{% endblockinclude %}"
-    )
+    TEMPLATE_WITH_HEADER_SLOT = """
+        {% load blockinclude %}
+        {% blockinclude 'includes/the-slotted-box.html' %}
+            {% slot "header" %}{{ title }}{% endslot %}
+            Content
+        {% endblockinclude %}
+        """
 
     def test_second_render_with_content_changed_to_empty(
         self,
