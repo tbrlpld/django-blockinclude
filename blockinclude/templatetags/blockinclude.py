@@ -19,7 +19,7 @@ SLOT_START_TAG = "slot"
 SLOT_END_TAG = "endslot"
 
 
-register = django.template.library.Library()
+register = django.template.Library()
 
 
 class BlockInclude(django.template.loader_tags.IncludeNode):
