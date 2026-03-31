@@ -6,9 +6,11 @@
 [![codecov](https://codecov.io/gh/tbrlpld/django-blockincludegraph/badge.svg?token=FMHEHNVPSX)](https://codecov.io/gh/tbrlpld/django-blockinclude)
 [![Published on Django Packages](https://img.shields.io/badge/Published%20on-Django%20Packages-0c3c26)](https://djangopackages.org/packages/p/django-blockinclude)
 
----
+***
 
-**An extended `include` tag to allow blocks of markup to be passed to the included template.**
+**An extension of Django's `include` tag that allows sections of markup to be passed to the included template.**
+
+***
 
 ## Getting started
 
@@ -24,7 +26,7 @@ Then, add to your installed apps:
 ```python
 # settings.py
 
-INSTALLED_APPS = ["blockinclude", ...]
+INSTALLED_APPS = [..., "blockinclude", ...]
 ```
 
 
