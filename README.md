@@ -105,6 +105,9 @@ If `my-page.html` is rendered with `items = ["Apple", "Banana"]` in the context,
 
 If you wish to pass more than one section of markup with different names to the included template, you can add `slot` tags inside the `blockinclude`.
 
+Let's assume with have the following `my-slotted-box.html` template.
+This template does not only use the `content` variable, but also the `header` variable.
+
 ```django
 {# my-slotted-box.html #}
 
@@ -115,11 +118,19 @@ If you wish to pass more than one section of markup with different names to the 
         </header>
     {% endif %}
 
-    {{ content }}
+    <div>
+        {{ content }}
+    </div>
 </div>
 ```
 
+Now, if we want to fill both of these variables with multiples lines of markup or template logic, we can include the template like so:
+
 ```django
+{# my-page.html #}
+
+{% load blockinclude %}
+
 {% blockinclude "my-slotted-box.html" %}
     {% slot "header" %}
         Header of the box
@@ -129,11 +140,70 @@ If you wish to pass more than one section of markup with different names to the 
 {% endblockinclude %}
 ```
 
-In the above example, the `my-slotted-box.html` template will receive the variables `content="The body content of the box."` and `header="Header of the box"`.
+The result of rendering `my-page.html` will be:
+
+```html
+<div class="p-12 border-2 border-black">
+    <header>
+        Header of the box
+    </header>
+
+    <div>
+        The body content of the box.
+    </div>
+</div>
+```
 
 You can use as many `slot` tags inside a `blockinclude` as you like.
-The `slot` does have to be a direct child of the `blockinclude` and can not be nested in other template block tags (`if` or `for`) inside the `blockinclude`.
+
+```django
+{# my-slotted-box.html #}
+
+<div class="p-12 border-2 border-black">
+    {% if header %}
+        <header>
+            {{ header }}
+        </header>
+    {% endif %}
+
+    <div>
+        {{ content }}
+    </div>
+
+    {% if footer %}
+        <footer>
+            {{ footer }}
+        </footer>
+    {% endif %}
+</div>
+```
+
+```django
+{# my-page.html #}
+
+{% load blockinclude %}
+
+{% blockinclude "my-slotted-box.html" %}
+    {% slot "header" %}
+        Header of the box
+    {% endslot %}
+
+    The body content of the box.
+
+    {% slot "footer" %}
+        Footer of the box
+    {% endslot %}
+{% endblockinclude %}
+```
+
+#### Some notes about `slot` usage
+
+* The `slot` does have to be a direct child of the `blockinclude` and can not be nested in other template block tags (`if` or `for`) inside the `blockinclude`.
 The `blockinclude` itself can be nested inside of other template tag blocks just fine.
+* The name of the slot needs to be quoted. `{% slot "header" %}` is ok, while `{% slot header %}` is not.
+* You can not use `"content"` as a slot name, as that name is reserved for the content of the `blockinclude`. `{% slot "content" %}` is not ok.
+* The definition order of the slots in the parent template does not matter.
+* All content in the `blockinclude` outside of `slot` blocks is merged into the `content` variable.
 
 ## About Django Block Include
 
