@@ -1,0 +1,37 @@
+{% extends '_test-base.html' %}
+
+{% load blockinclude %}
+
+{% block content %}
+    <p>
+        While it is not possible to nest the <code>slot</code> tag in other blocks than the <code>blockinclude</code> tag, there is no such limitation for the <code>blockinclude</code> itself.
+    </p>
+
+    <div id="truthy-container">
+        {% if True %}
+            {% blockinclude 'includes/the-slotted-box.html' %}
+                {% slot "header" %}
+                    Phasellus nulla justo, dictum eu diam non, congue consequat ipsum.
+                {% endslot %}
+
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            {% endblockinclude %}
+        {% endif %}
+    </div>
+
+    <p>
+        Thus, you see the included box above ⬆️, but you don't see it below ⬇️.
+    </p>
+
+    <div id="falsey-container" class="output">
+        {% if False %}
+            {% blockinclude 'includes/the-slotted-box.html' %}
+                {% slot "header" %}
+                    Adipisci atque aut incidunt
+                {% endslot %}
+
+                Minima modi non quia.
+            {% endblockinclude %}
+        {% endif %}
+    </div>
+{% endblock %}

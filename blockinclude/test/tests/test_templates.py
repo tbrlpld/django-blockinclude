@@ -321,3 +321,17 @@ class TestTemplates(django.test.SimpleTestCase):
         output = soup.find(id="content-output-in-parent")
         output = self.assertIsTag(output)
         self.assertStringNotInTag(string="Phasellus ", tag=output)
+
+    def test_conditional_blockinclude(self) -> None:
+        soup = self.get_soup_for_template(
+            template_name="tests/test-20-conditional-blockinclude.html",
+        )
+
+        truthy_container = soup.find(id="truthy-container")
+        truthy_container = self.assertIsTag(truthy_container)
+        self.assertStringInTag(string="Lorem ", tag=truthy_container)
+        self.assertStringInTag(string="Phasellus ", tag=truthy_container)
+        falsey_container = soup.find(id="falsey-container")
+        falsey_container = self.assertIsTag(falsey_container)
+        self.assertStringNotInTag(string="Minima ", tag=falsey_container)
+        self.assertStringNotInTag(string="Adipisci ", tag=falsey_container)
