@@ -37,10 +37,16 @@ dependencies = [
 ]
 keywords = [
     "django",
+    "template",
     "templates",
     "include",
     "block",
+    "includes",
+    "blocks",
     "slot",
+    "slots",
+    "component",
+    "components",
 ]
 
 [project.optional-dependencies]
