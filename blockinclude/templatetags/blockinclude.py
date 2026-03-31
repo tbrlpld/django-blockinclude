@@ -267,9 +267,11 @@ def do_slot(
     """
     Define variable name for a markup block to the parent `blockinclude`.
 
-    Use this tag to create store a block of markup as a variable, with the name
-    provided as the argument to the tag. The variable is passed with the same name to
-    the template included by the surrounding `blockinclude`.
+    Use this tag to define a block of markup and pass it as a context variable to the
+    template included by the surrounding `blockinclude`. The name of the variable is
+    defined as the first, and only, argument to this tag.
+
+    Note: The slot name  needs to be quoted and a valid Python variable name.
 
     This tag needs to be used as a direct child of the `blockinclude`. Nesting it inside
     other block tags (like `if`, `for` etc.) does not work.
@@ -284,9 +286,6 @@ def do_slot(
         The body content of the box.
     {% endblockinclude %}
     ```
-
-    Note: The slot name (the first argument) needs to be quoted and a valid Python
-    variable name.
     """
     content_nodelist = parser.parse((SLOT_END_TAG,))
     parser.delete_first_token()
