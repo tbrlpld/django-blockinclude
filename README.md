@@ -203,6 +203,7 @@ The `blockinclude` itself can be nested inside of other template tag blocks just
 * The name of the slot needs to be quoted. `{% slot "header" %}` is ok, while `{% slot header %}` is not.
 * You can not use `"content"` as a slot name, as that name is reserved for the content of the `blockinclude`. `{% slot "content" %}` is not ok.
 * The definition order of the slots in the parent template does not matter.
+* If you reuse the same slot name, then the latter definition overrides a prior one (in source order).
 * All content in the `blockinclude` outside of `slot` blocks is merged into the `content` variable.
 
 ## About Django Block Include
