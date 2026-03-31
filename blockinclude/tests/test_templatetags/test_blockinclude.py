@@ -133,11 +133,11 @@ class TestSlotParsing(django.test.SimpleTestCase):
     def test_valid(self) -> None:
         template = self.parse_template_string(
             """
-        {% load blockinclude %}
-        {% slot "test" %}
-            Content
-        {% endslot %}
-        """
+            {% load blockinclude %}
+            {% slot "test" %}
+                Content
+            {% endslot %}
+            """
         )
 
         slot_nodes = typing.cast(
@@ -154,31 +154,53 @@ class TestSlotParsing(django.test.SimpleTestCase):
         with self.assertRaises(django.template.TemplateSyntaxError):
             self.parse_template_string(
                 """
-            {% load blockinclude %}
-            {% slot %}
-                Content
-            {% endslot %}
-            """
+                {% load blockinclude %}
+                {% slot %}
+                    Content
+                {% endslot %}
+                """
             )
 
     def test_extra_argument(self) -> None:
         with self.assertRaises(django.template.TemplateSyntaxError):
             self.parse_template_string(
                 """
-            {% load blockinclude %}
-            {% slot test extra_argument %}
-                Content
-            {% endslot %}
-            """
+                {% load blockinclude %}
+                {% slot test extra_argument %}
+                    Content
+                {% endslot %}
+                """
             )
 
     def test_unquoted_slotname(self) -> None:
         with self.assertRaises(django.template.TemplateSyntaxError):
             self.parse_template_string(
                 """
+                {% load blockinclude %}
+                {% slot test %}
+                    Content
+                {% endslot %}
+                """
+            )
+
+    def test_content_as_slot_name(self) -> None:
+        with self.assertRaises(django.template.TemplateSyntaxError):
+            self.parse_template_string(
+                """
             {% load blockinclude %}
-            {% slot test %}
+            {% slot "content" %}
                 Content
             {% endslot %}
             """
+            )
+
+    def test_slotname_not_valid_variable_name(self) -> None:
+        with self.assertRaises(django.template.TemplateSyntaxError):
+            self.parse_template_string(
+                """
+                {% load blockinclude %}
+                {% slot "not possible" %}
+                    Content
+                {% endslot %}
+                """
             )

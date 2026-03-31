@@ -5,6 +5,8 @@ from typing import TYPE_CHECKING
 import django.template.base
 import django.template.loader_tags
 
+import blockinclude.string
+
 
 if TYPE_CHECKING:
     import django.utils.safestring
@@ -293,7 +295,10 @@ def do_slot(
             "as which the content should be passed to the included template."
             % SLOT_START_TAG
         )
-    if bits[1] == BLOCKINCLUDE_CONTENT_VAR_NAME:
+
+    slotname = unquote_or_raise(bits[1])
+
+    if slotname == BLOCKINCLUDE_CONTENT_VAR_NAME:
         raise django.template.exceptions.TemplateSyntaxError(
             "%r is a protected variable used for the main block content of %r. "
             "It can not be used as an argument to %r."
@@ -302,5 +307,30 @@ def do_slot(
 
     return SlotNode(
         content_nodelist=content_nodelist,
-        target_variable_name=bits[1],
+        target_variable_name=slotname,
     )
+
+
+def unquote_or_raise(slotname: str) -> str:
+    """
+    Remove surrounding quotes from the slotname.
+
+    Raises `django.template.exceptions.TemplateSyntaxError` if the slotname was
+    not quoted.
+    """
+    potential_slotname = slotname
+    unquoted_slotname = blockinclude.string.without_quotes(potential_slotname)
+    had_quotes = potential_slotname != unquoted_slotname
+    if not had_quotes:
+        raise django.template.exceptions.TemplateSyntaxError(
+            "The first argument to %r has to be quoted. "
+            "Please use '%s %s \"%s\" %s'."
+            % (
+                SLOT_START_TAG,
+                django.template.base.BLOCK_TAG_START,
+                SLOT_START_TAG,
+                potential_slotname,
+                django.template.base.BLOCK_TAG_END,
+            ),
+        )
+    return unquoted_slotname
