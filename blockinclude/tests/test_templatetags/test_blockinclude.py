@@ -1,5 +1,13 @@
+import typing
+
 import django.template
 import django.test
+
+import blockinclude.templatetags.blockinclude
+
+
+if typing.TYPE_CHECKING:
+    import django.utils.safestring
 
 
 class TestBlockIncludeNodeReuse(django.test.SimpleTestCase):
@@ -116,3 +124,61 @@ class TestBlockIncludeNodeReuse(django.test.SimpleTestCase):
         self.assertIn("First title", first_output)
         self.assertNotIn("First title", second_output)
         self.assertIn("Second title", second_output)
+
+
+class TestSlotParsing(django.test.SimpleTestCase):
+    def parse_template_string(self, template_string: str) -> django.template.Template:
+        return django.template.Template(template_string)
+
+    def test_valid(self) -> None:
+        template = self.parse_template_string(
+            """
+        {% load blockinclude %}
+        {% slot "test" %}
+            Content
+        {% endslot %}
+        """
+        )
+
+        slot_nodes = typing.cast(
+            list[blockinclude.templatetags.blockinclude.SlotNode],
+            template.nodelist.get_nodes_by_type(
+                blockinclude.templatetags.blockinclude.SlotNode
+            ),
+        )
+        self.assertEqual(len(slot_nodes), 1)
+        slot_node = slot_nodes[0]
+        self.assertEqual(slot_node.target_variable_name, "test")
+
+    def test_missing_slotname(self) -> None:
+        with self.assertRaises(django.template.TemplateSyntaxError):
+            self.parse_template_string(
+                """
+            {% load blockinclude %}
+            {% slot %}
+                Content
+            {% endslot %}
+            """
+            )
+
+    def test_extra_argument(self) -> None:
+        with self.assertRaises(django.template.TemplateSyntaxError):
+            self.parse_template_string(
+                """
+            {% load blockinclude %}
+            {% slot test extra_argument %}
+                Content
+            {% endslot %}
+            """
+            )
+
+    def test_unquoted_slotname(self) -> None:
+        with self.assertRaises(django.template.TemplateSyntaxError):
+            self.parse_template_string(
+                """
+            {% load blockinclude %}
+            {% slot test %}
+                Content
+            {% endslot %}
+            """
+            )
