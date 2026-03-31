@@ -298,7 +298,7 @@ class TestTemplates(django.test.SimpleTestCase):
         # find the output.
         header = the_box.find("header")
         self.assertIsNone(header)
-        # The `footer` slot definition, on the other hand, is wrapped in a truhty
+        # The `footer` slot definition, on the other hand, is wrapped in a truthy
         # condition. However, we still won't find it in the output. That is because
         # `slot` tags need to be defined as direct children of the `blockinclude`.
         footer = the_box.find("footer")
@@ -307,8 +307,8 @@ class TestTemplates(django.test.SimpleTestCase):
     def test_slot_outside_blockinclude(self) -> None:
         """
         When the slot is used outside the blockinclude tag, it should neither render
-        its output inplace nor add the content as a variable to the parent context
-        (pollute) which could be output in the parent elsewhere on accident.
+        its output in place nor add the content as a variable to the parent context
+        (pollute) which could be output in the parent elsewhere by accident.
         """
         soup = self.get_soup_for_template(
             template_name="tests/test-19-slot-outside-blockinclude.html",
