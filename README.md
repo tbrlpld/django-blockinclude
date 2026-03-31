@@ -47,7 +47,7 @@ Let's presume we have the following template `my-box.html`:
 Now we want to fill the box with some content.
 To do that, you use the `blockinclude` tag and pass it the path to `my-box.html`, just like you would with the [default `include` tag](https://docs.djangoproject.com/en/stable/ref/templates/builtins/#include).
 Unlike the `include` tag, `blockinclude` is a block tag and comes with the `endblockinclude` end tag.
-This allows you to pass a block from the parent template (`my-page.html`) to be passed to the included template (`my-box.html`), like so:
+This allows you to pass a section of content from the parent template (`my-page.html`) to the included template (`my-box.html`), like so:
 
 ```django
 {# my-page.html #}
