@@ -201,8 +201,8 @@ You can use as many `slot` tags inside a `blockinclude` as you like.
 #### `blockinlude`
 
 * `blockinclude` supports all features of the [`include` tag](https://docs.djangoproject.com/en/stable/ref/templates/builtins/#include).
-* By default, the included template received the whole parent context.
-* You can pass extra context as [keyword arguments](https://docs.djangoproject.com/en/6.0/ref/templates/builtins/#:~:text=You%20can%20pass%20additional%20context%20to%20the%20template%20using%20keyword%20arguments), `{% blockinclude ... with extra="My value" %}`.
+* By default, the included template receives the whole parent context.
+* You can pass extra context via [keyword arguments](https://docs.djangoproject.com/en/6.0/ref/templates/builtins/#:~:text=You%20can%20pass%20additional%20context%20to%20the%20template%20using%20keyword%20arguments), `{% blockinclude ... with extra="My value" %}`.
 * You can prevent passing of the parent context and limit the passed context to only the keyword arguments and the tag content, by appending `only` to the opening tag, `{% blockinclude ... with extra="My value" only %}`.
 * If you use `content=...` as a keyword argument, this will be overridden by the content of `blockinclude` tag.
 
@@ -216,7 +216,7 @@ You can use as many `slot` tags inside a `blockinclude` as you like.
 * The `slot` has to be a direct child of the `blockinclude` and can not be nested in other template block tags (`if` or `for`) inside the `blockinclude`.
   The `blockinclude` itself can be nested inside of other template tag blocks just fine.
 * If you use the same name as a keyword argument and as a slot name, then the slot content overrides the value of the keyword argument.
-* When you use `only` only the `blockinclude`, the slot contents are still passed.
+* When you use `only` on the `blockinclude`, the slot contents are still passed.
 
 ## About Django Block Include
 
