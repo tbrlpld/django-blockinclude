@@ -101,14 +101,6 @@ If `my-page.html` is rendered with `items = ["Apple", "Banana"]` in the context,
 </div>
 ```
 
-#### Some notes about `blockinlude` usage
-
-* `blockinclude` supports all features of the `include` tag.
-* By default, the included template received the whole parent context.
-* You can pass extra context as keyword arguments, `{% blockinclude ... with extra="My value" %}`.
-* You can limit the passed context to only the keyword arguments and the tag content, by appending `only` to the opening tag, `{% blockinclude ... with extra="My value" only %}`.
-* If you use `content=...` as a keyword argument, this will be overridden by the content of `blockinclude` tag.
-
 ### Passing multiple sections with `slot`
 
 If you wish to pass more than one section of markup with different names to the included template, you can add `slot` tags inside the `blockinclude`.
@@ -204,16 +196,26 @@ You can use as many `slot` tags inside a `blockinclude` as you like.
 {% endblockinclude %}
 ```
 
-#### Some notes about `slot` usage
+### Additional notes about tag usage
+
+#### `blockinlude`
+
+* `blockinclude` supports all features of the `include` tag.
+* By default, the included template received the whole parent context.
+* You can pass extra context as keyword arguments, `{% blockinclude ... with extra="My value" %}`.
+* You can limit the passed context to only the keyword arguments and the tag content, by appending `only` to the opening tag, `{% blockinclude ... with extra="My value" only %}`.
+* If you use `content=...` as a keyword argument, this will be overridden by the content of `blockinclude` tag.
+
+#### `slot`
 
 * The name of the slot needs to be quoted. `{% slot "header" %}` is ok, while `{% slot header %}` is not.
-* You can not use `"content"` as a slot name, as that name is reserved for the content of the `blockinclude`. `{% slot "content" %}` is not ok.
+* You can not use `"content"` as a slot name, because that name is reserved for the content of the `blockinclude`. `{% slot "content" %}` is not ok.
 * The definition order of the `slot` tags in the parent template does not matter.
 * If you reuse the same slot name, then the latter definition overrides a prior one (in source order).
 * All content in the `blockinclude` outside of `slot` tags is merged into the `content` variable.
 * The `slot` has to be a direct child of the `blockinclude` and can not be nested in other template block tags (`if` or `for`) inside the `blockinclude`.
   The `blockinclude` itself can be nested inside of other template tag blocks just fine.
-* If you use the same name as a keyword argument and a slot name, then the slot content overrides the value of the keyword argument.
+* If you use the same name as a keyword argument and as a slot name, then the slot content overrides the value of the keyword argument.
 
 ## About Django Block Include
 
