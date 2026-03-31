@@ -8,7 +8,7 @@
 
 ***
 
-**An extension of Django's `include` tag that allows sections of markup to be passed to the included template.**
+**An extension of Django's `include` tag to pass sections of markup to the included template.**
 
 ***
 
