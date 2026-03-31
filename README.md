@@ -92,7 +92,7 @@ Let's change `my-page.html` to the following:
 {% endblockinclude %}
 ```
 
-Now, if `my-page.html` is rendered with `items = ["Apple", "Banana"]` in the context, then rendered result will be:
+Now, if `my-page.html` is rendered with `items = ["Apple", "Banana"]` in the context, then the rendered result will be:
 
 ```html
 <div class="p-12 border-2 border-black">
@@ -107,7 +107,7 @@ Now, if `my-page.html` is rendered with `items = ["Apple", "Banana"]` in the con
 
 If you wish to pass more than one section of markup with different names to the included template, you can add `slot` tags inside the `blockinclude`.
 
-Let's assume with have the following `my-slotted-box.html` template.
+Let's assume we have the following `my-slotted-box.html` template.
 This template does not only use the `content` variable, but also the `header` variable.
 
 ```django
@@ -126,7 +126,7 @@ This template does not only use the `content` variable, but also the `header` va
 </div>
 ```
 
-Now, if we want to fill both of these variables with multiples lines of markup, we can include the template like so:
+Now, if we want to fill both of these variables with multiple lines of markup, we can include the template like so:
 
 ```django
 {# my-page.html #}
@@ -203,7 +203,7 @@ Template logic in a `slot` is executed with the context of the parent template, 
 
 ### Additional notes about tag usage
 
-#### `blockinlude`
+#### `blockinclude`
 
 * `blockinclude` supports all features of the [`include` tag](https://docs.djangoproject.com/en/stable/ref/templates/builtins/#include).
 * By default, the included template receives the whole parent context.
