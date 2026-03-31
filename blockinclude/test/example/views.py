@@ -1,75 +1,81 @@
+import dataclasses
+import os
+import pathlib
+
 from typing import TYPE_CHECKING
 
-from django.shortcuts import render
-
-from blockinclude.components import MediaContainer
-from blockinclude.test.example.components import (
-    BlockquoteComponent,
-    DataclassAsDictContextComponent,
-    FooterWithMediaComponent,
-    HeaderWithMediaComponent,
-    HeadingComponent,
-    ListSectionComponent,
-    MediaDefiningComponent,
-    ParagraphComponent,
-    PassesFixedNameToContextComponent,
-    PassesInstanceAttributeToContextComponent,
-    PassesNameFromParentContextComponent,
-    PassesSelfToContextComponent,
-    RendersTemplateWithFixedContentComponent,
-    ReturnsFixedContentComponent,
-    SectionWithHeadingAndParagraphComponent,
-)
+import django.http
+import django.shortcuts
+import django.urls
+import django.utils.html
 
 
 if TYPE_CHECKING:
     from django.http import HttpRequest, HttpResponse
 
 
-def kitchen_sink(request: "HttpRequest") -> "HttpResponse":
-    """Render a page with all example components."""
-    fixed_content_template = RendersTemplateWithFixedContentComponent()
-    fixed_content_return = ReturnsFixedContentComponent()
-    passes_fixed_name = PassesFixedNameToContextComponent()
-    passes_instance_attr_name = PassesInstanceAttributeToContextComponent(name="Bob")
-    passes_self = PassesSelfToContextComponent(name="Carol")
-    dataclass_attr_name = DataclassAsDictContextComponent(name="Charlie")
-    passes_name_from_parent_context = PassesNameFromParentContextComponent()
-    section_with_heading_and_paragraph = SectionWithHeadingAndParagraphComponent(
-        heading=HeadingComponent(text="Hello"),
-        content=ParagraphComponent(text="World"),
-    )
-    list_section = ListSectionComponent(
-        heading=HeadingComponent(text="Heading"),
-        items=[
-            ParagraphComponent(text="Item 1"),
-            BlockquoteComponent(text="Item 2"),
-            ParagraphComponent(text="Item 3"),
-        ],
-    )
-    media_defining_component = MediaDefiningComponent()
-    components_with_media = MediaContainer(
-        [
-            HeaderWithMediaComponent(),
-            FooterWithMediaComponent(),
-        ]
+@dataclasses.dataclass
+class Link:
+    href: str
+    text: str
+
+
+def index(request: "HttpRequest") -> "HttpResponse":
+    """Render a page with all examples."""
+
+    test_template_filenames = get_test_template_filenames()
+
+    links = [
+        Link(
+            href=django.urls.reverse("render_test_template", kwargs={"filename": ttf}),
+            text=get_title_from_filename(ttf),
+        )
+        for ttf in sorted(test_template_filenames)
+        if not ttf.startswith("_")
+    ]
+
+    return django.shortcuts.render(
+        request,
+        template_name="pages/index.html",
+        context={"links": links},
     )
 
-    return render(
+
+class HttpResponseTemplateNotFound(django.http.HttpResponseNotFound):
+    def __init__(self, *, filename: str) -> None:
+        filename = django.utils.html.escape(filename)
+        super().__init__(content=f"Requested test template not found: {filename}")
+
+
+def render_test_template(request: "HttpRequest", filename: str) -> "HttpResponse":
+    """Render the requested test template."""
+
+    allowed_filenames = get_test_template_filenames()
+    if filename not in allowed_filenames:
+        return HttpResponseTemplateNotFound(filename=filename)
+
+    title = get_title_from_filename(filename)
+
+    return django.shortcuts.render(
         request,
-        template_name="pages/kitchen-sink.html",
+        template_name=f"tests/{filename}",
         context={
-            "fixed_content_template": fixed_content_template,
-            "fixed_content_return": fixed_content_return,
-            "passes_fixed_name": passes_fixed_name,
-            "passes_instance_attr_name": passes_instance_attr_name,
-            "passes_self": passes_self,
-            "dataclass_attr_name": dataclass_attr_name,
-            "passes_name_from_parent_context": passes_name_from_parent_context,
-            "name": "Dan",  # Provide as an example of parent context.
-            "section_with_heading_and_paragraph": section_with_heading_and_paragraph,
-            "list_section": list_section,
-            "media_defining_component": media_defining_component,
-            "components_with_media": components_with_media,
+            "title": title,
+            "items": [
+                "Lorem",
+                "Ipsum",
+            ],
         },
     )
+
+
+def get_title_from_filename(filename: str) -> str:
+    title = filename[8:-5].replace("-", " ").title()
+    return title
+
+
+def get_test_template_filenames() -> tuple[str, ...]:
+    views_filepath = pathlib.Path(__file__)
+    test_template_dir = views_filepath.parent / "templates/tests"
+    test_template_filenames = os.listdir(test_template_dir)
+    return tuple(test_template_filenames)

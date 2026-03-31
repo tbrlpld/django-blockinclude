@@ -10,7 +10,7 @@ authors = [
 maintainers= [
     {name = "Tibor Leupold", email = "tibor@lpld.io"},
 ]
-description = "An extension of the `include` tag that allows markup from the parent to be passed to the included template."
+description = "Extended `include` tag to allow blocks of markup to be passed to the included template."
 readme = "README.md"
 classifiers = [
     # https://pypi.org/classifiers/
@@ -20,31 +20,32 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Framework :: Django",
-    "Framework :: Django :: 3.2",
-    "Framework :: Django :: 4.0",
-    "Framework :: Django :: 4.1",
     "Framework :: Django :: 4.2",
-    "Framework :: Django :: 5.0",
+    "Framework :: Django :: 5.2",
+    "Framework :: Django :: 6.0",
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 dynamic = ["version"]
 dependencies = [
-    "Django>=3.2",
+    "Django>=4.2",
 ]
 keywords = [
     "django",
     "templates",
     "include",
+    "block",
+    "slot",
 ]
 
 [project.optional-dependencies]
 testing = [
+    "beautifulsoup4==4.14.3",
     "dj-database-url==2.1.0",
     # Running tests with coverage inside the tox test environment.
     "coverage==7.3.4",
@@ -66,8 +67,8 @@ dev = [
     "flake8==7.0.0",
     "flake8-bugbear",
     "flake8-comprehensions",
-    "mypy==1.7.1",
-    "django-stubs[compatible-mypy]==4.2.7",
+    "mypy==1.19.1",
+    "django-stubs[compatible-mypy]==5.2.9",
     "types-requests==2.31.0.20240125",
 ]
 

@@ -1,0 +1,23 @@
+{% extends '_test-base.html' %}
+
+{% load blockinclude %}
+
+{% block content %}
+    <p>
+        Inside the content block of one <code>blockinclude</code> you can use another <code>blockinclude</code>.
+    </p>
+
+    <div>
+        {% blockinclude 'includes/the-box.html' %}
+            <div style="display: flex; flex-direction: column; gap: 2rem;">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+
+                {% blockinclude 'includes/the-box.html' %}
+                    Phasellus nulla justo, dictum eu diam non, congue consequat ipsum.
+                {% endblockinclude %}
+
+                Minima modi non quia.
+            </div>
+        {% endblockinclude %}
+    </div>
+{% endblock %}

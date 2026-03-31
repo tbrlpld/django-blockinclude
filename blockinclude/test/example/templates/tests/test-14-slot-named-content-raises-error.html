@@ -1,0 +1,22 @@
+{% extends '_test-base.html' %}
+
+{% load blockinclude %}
+
+{% block content %}
+    <p>
+        Don't use "content" as the name for a <code>slot</code>.
+        That variable is always the content of the <code>blockinclude</code>.
+        An error is raised if you try to.
+        So this template won't render right.
+    </p>
+
+    <div>
+        {% blockinclude 'includes/the-box.html' %}
+            {% slot "content" %}
+                Adipisci atque aut incidunt
+            {% endslot %}
+
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        {% endblockinclude %}
+    </div>
+{% endblock %}

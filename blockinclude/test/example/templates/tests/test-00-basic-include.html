@@ -1,0 +1,46 @@
+{% extends '_test-base.html' %}
+
+{% block content %}
+    <p>
+        Below is a paragraph included from another template.
+        This is the plain include functionality with the default include tag.
+    </p>
+    <div>
+        {% include 'includes/static-paragraph.html' %}
+    </div>
+
+    <hr>
+    <p>
+        You can also pass variables to included template.
+        Here is a box that receives a string as the <code>content</code> variable.
+    </p>
+    <div>
+        {% include 'includes/the-box.html' with content="Lorem ipsum dolor sit amet, consectetur adipiscing elit." %}
+    </div>
+
+    <hr>
+    <p>
+        You can even pass markup to the variable.
+        Notice the bolded "Lorem".
+    </p>
+    <div>
+        {% include 'includes/the-box.html' with content="<b>Lorem</b> ipsum dolor sit amet, consectetur adipiscing elit." %}
+    </div>
+
+    <hr>
+    <p>
+        Unfortunately, you can only pass single lines.
+        When you break the tag over multiple lines, then the tag does not work anymore and is printed in the output.
+    </p>
+    <div>
+        {% include 'includes/the-box.html' with content="
+                <p>
+                    <b>Lorem</b> ipsum dolor sit amet, consectetur adipiscing elit.
+                </p>
+            " %}
+    </div>
+    <p>
+        You could use or create a <code>fragment</code> tag as <a href="https://mitchel.me/slippers/docs/template-tags-filters/#fragment">Slippers</a> and <a href="https://docs.wagtail.org/en/latest/reference/ui/components.html#fragment">Wagtail</a> have them.
+        These tags allow a block of rendered template to be stored in a variable which can then be output or passed around.
+    </p>
+{% endblock %}

@@ -8,7 +8,7 @@
 
 ---
 
-An extension of the `include` tag that allows markup from the parent to be passed to the included template.
+**An extended `include` tag to allow blocks of markup to be passed to the included template.**
 
 ## Getting started
 
@@ -32,8 +32,8 @@ INSTALLED_APPS = ["blockinclude", ...]
 
 ### Supported versions
 
-- Python >= 3.8
-- Django >= 3.2
+- Python >= 3.10
+- Django >= 4.2
 
 ## Contributing
 
@@ -43,7 +43,7 @@ To make changes to this project, first clone this repository:
 
 ```sh
 $ git clone https://github.com/tbrlpld/django-blockinclude.git
-$ cd blockinclude
+$ cd django-blockinclude
 ```
 
 With your preferred virtualenv activated, install the development dependencies:
@@ -86,13 +86,13 @@ $ tox
 Or, you can run them for a specific environment:
 
 ```sh
-$ tox -e python3.11-django4.2
+$ tox -e python3.13-django5.2
 ```
 
 Or, run only a specific test:
 
 ```sh
-$ tox -e python3.11-django4.2 blockinclude.tests.test_file.TestClass.test_method
+$ tox -e python3.13-django5.2 blockinclude.tests.test_file.TestClass.test_method
 ```
 
 To run the test app interactively, use:
@@ -140,6 +140,18 @@ To run tests with coverage, use:
 ```sh
 $ coverage run ./testmanage.py test
 ```
+
+#### Running the example app
+
+Sometimes you may want to confirm the rendering in the browser with your own eyes instead of test assertions.
+
+You can run the example app with:
+
+```sh
+$ ./testmanage.py runserver 8000
+```
+
+Now you can visit the app in the browser at `http://localhost:8000/`.
 
 ### Python version management
 

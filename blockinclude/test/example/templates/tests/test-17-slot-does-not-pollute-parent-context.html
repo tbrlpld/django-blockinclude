@@ -1,0 +1,28 @@
+{% extends '_test-base.html' %}
+
+{% load blockinclude %}
+
+{% block content %}
+    <p>
+        The content of the <code>slot</code> tag, is made available in the included template as a variable matching the slot name.
+    </p>
+
+    <div>
+        {% blockinclude 'includes/the-slotted-box.html' %}
+            {% slot "header" %}
+                Phasellus nulla justo, dictum eu diam non, congue consequat ipsum.
+            {% endslot %}
+
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        {% endblockinclude %}
+    </div>
+
+    <p>
+        However, we don't want to have that variable available in the parent context.
+        The output box below should be empty.
+    </p>
+
+    <div id="content-output-in-parent" class="output">
+        {{ header }}
+    </div>
+{% endblock %}

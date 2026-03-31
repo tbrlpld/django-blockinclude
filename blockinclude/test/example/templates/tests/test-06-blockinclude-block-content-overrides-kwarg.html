@@ -1,0 +1,16 @@
+{% extends '_test-base.html' %}
+
+{% load blockinclude %}
+
+{% block content %}
+    <p>
+        The <code>content</code> variable is basically "protected".
+        If you set it as a traditional keyword argument it will be overridden by the block content.
+    </p>
+
+    <div>
+        {% blockinclude 'includes/the-box.html' with content="Adipisci atque aut incidunt" %}
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        {% endblockinclude %}
+    </div>
+{% endblock %}

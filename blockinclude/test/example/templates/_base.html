@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Block Include Example App{% endblock %}</title>
+    <style>
+        :root {
+            color-scheme: light dark;
+        }
+
+        code {
+            display: inline-block;
+            color: ButtonText;
+            background-color: ButtonFace;
+            padding: 0.25em;
+            border-radius: 0.25rem;
+        }
+    </style>
+    {% block extra_head %}{% endblock extra_head %}
+</head>
+<body>
+    {% block body %}
+    {% endblock %}
+</body>
+</html>

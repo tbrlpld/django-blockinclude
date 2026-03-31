@@ -1,0 +1,29 @@
+{% extends '_test-base.html' %}
+
+{% load blockinclude %}
+
+{% block content %}
+    <p>
+        When the <code>slot</code> is nested inside of a <code>if</code> block or similar, then it is not the child of the <code>blockinclude</code> anymore.
+        In those cases, it is not rendered, and the variables are not available in the included template.
+        If you need to conditionally change the content of a <code>slot</code>, do that inside of the <code>slot</code>.
+    </p>
+
+    <div>
+        {% blockinclude 'includes/the-slotted-box.html' %}
+            {% if False %}
+                {% slot "header" %}
+                    Phasellus nulla justo, dictum eu diam non, congue consequat ipsum.
+                {% endslot %}
+            {% endif %}
+
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+
+            {% if True %}
+                {% slot "footer" %}
+                    Minima modi non quia.
+                {% endslot %}
+            {% endif %}
+        {% endblockinclude %}
+    </div>
+{% endblock %}

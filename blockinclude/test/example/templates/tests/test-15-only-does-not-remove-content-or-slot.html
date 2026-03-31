@@ -1,0 +1,27 @@
+{% extends '_test-base.html' %}
+
+{% load blockinclude %}
+
+{% block content %}
+    <p>
+        The <code>only</code> keyword on the <code>blockinclude</code> tag prevents the passing from other parent context, but <code>content</code> and the slot names will be available.
+    </p>
+    <p>
+        Notice how there won't be a footer, although the variable is defined in the parent.
+        Passing the <code>footer</code> variable is prevented by the <code>only</code> keyword.
+        The <code>content</code> and <code>header</code> variable, on the other hand, are available in the included template and rendered.
+        They are not affected by the <code>only</code> keyword.
+    </p>
+
+    <div>
+        {% with footer="Adipisci atque aut incidunt" %}
+            {% blockinclude 'includes/the-slotted-box.html' only %}
+                {% slot "header" %}
+                    Phasellus nulla justo, dictum eu diam non, congue consequat ipsum.
+                {% endslot %}
+
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            {% endblockinclude %}
+        {% endwith %}
+    </div>
+{% endblock %}

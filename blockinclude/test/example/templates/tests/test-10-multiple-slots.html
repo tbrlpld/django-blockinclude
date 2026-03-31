@@ -1,0 +1,24 @@
+{% extends '_test-base.html' %}
+
+{% load blockinclude %}
+
+{% block content %}
+    <p>
+        You can also define multiple <code>slot</code> blocks in the same <code>blockinclude</code>.
+        Each <code>slot</code> is available in the included template with its name.
+    </p>
+
+    <div>
+        {% blockinclude 'includes/the-slotted-box.html' %}
+            {% slot "header" %}
+                Phasellus nulla justo, dictum eu diam non, congue consequat ipsum.
+            {% endslot %}
+
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+
+            {% slot "footer" %}
+                Minima modi non quia.
+            {% endslot %}
+        {% endblockinclude %}
+    </div>
+{% endblock %}

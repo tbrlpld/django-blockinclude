@@ -1,0 +1,24 @@
+{% extends '_test-base.html' %}
+
+{% load blockinclude %}
+
+{% block content %}
+    <p>
+        The <code>slot</code> block can also contain template logic.
+        The template logic is executed in the parent and the resulting markup is passed to the included template with the defined name of the slot.
+    </p>
+
+    <div>
+        {% blockinclude 'includes/the-slotted-box.html' %}
+            {% slot "header" %}
+                <ul>
+                    {% for item in items %}
+                        <li>{{ item }}</li>
+                    {% endfor %}
+                </ul>
+            {% endslot %}
+
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        {% endblockinclude %}
+    </div>
+{% endblock %}
