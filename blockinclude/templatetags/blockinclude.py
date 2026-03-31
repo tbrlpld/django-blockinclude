@@ -277,13 +277,16 @@ def do_slot(
     Usage:
     ```django
     {% blockinclude "my-box.html" %}
-        {% slot header %}
+        {% slot "header" %}
             Header of the box
         {% endslot %}
 
         The body content of the box.
     {% endblockinclude %}
     ```
+
+    Note: The slot name (the first argument) needs to be quoted and a valid Python
+    variable name.
     """
     content_nodelist = parser.parse((SLOT_END_TAG,))
     parser.delete_first_token()
@@ -297,6 +300,12 @@ def do_slot(
         )
 
     slotname = unquote_or_raise(bits[1])
+
+    if not slotname.isidentifier():
+        raise django.template.exceptions.TemplateSyntaxError(
+            "The first argument to %r needs to be a valid Python variable name."
+            % (SLOT_START_TAG)
+        )
 
     if slotname == BLOCKINCLUDE_CONTENT_VAR_NAME:
         raise django.template.exceptions.TemplateSyntaxError(
