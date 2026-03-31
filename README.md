@@ -198,13 +198,13 @@ You can use as many `slot` tags inside a `blockinclude` as you like.
 
 #### Some notes about `slot` usage
 
-* The `slot` does have to be a direct child of the `blockinclude` and can not be nested in other template block tags (`if` or `for`) inside the `blockinclude`.
-The `blockinclude` itself can be nested inside of other template tag blocks just fine.
 * The name of the slot needs to be quoted. `{% slot "header" %}` is ok, while `{% slot header %}` is not.
 * You can not use `"content"` as a slot name, as that name is reserved for the content of the `blockinclude`. `{% slot "content" %}` is not ok.
-* The definition order of the slots in the parent template does not matter.
+* The definition order of the `slot` tags in the parent template does not matter.
 * If you reuse the same slot name, then the latter definition overrides a prior one (in source order).
-* All content in the `blockinclude` outside of `slot` blocks is merged into the `content` variable.
+* All content in the `blockinclude` outside of `slot` tags is merged into the `content` variable.
+* The `slot` has to be a direct child of the `blockinclude` and can not be nested in other template block tags (`if` or `for`) inside the `blockinclude`.
+  The `blockinclude` itself can be nested inside of other template tag blocks just fine.
 
 ## About Django Block Include
 
