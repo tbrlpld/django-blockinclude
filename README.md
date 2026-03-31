@@ -68,13 +68,15 @@ Thus, the result of rendering `my-page.html` will be:
 </div>
 ```
 
-Of course, with a single line of text, this is not very interesting.
+Of course, passing a single line of text is not very interesting.
 That would also be possible with a [keyword argument to the default `include` tag](https://docs.djangoproject.com/en/6.0/ref/templates/builtins/#:~:text=You%20can%20pass%20additional%20context%20to%20the%20template%20using%20keyword%20arguments).
 
 But, `blockinclude` is not limited to simple strings.
 You can wrap any HTML markup or even template logic between the opening and closing tags.
 
 The template logic is evaluated in the context of the parent (`my-page.html`) and then passed to the included template (`my-box.html`) as the `content` variable.
+
+Let's change `my-page.html` to the following:
 
 ```django
 {# my-page.html #}
@@ -90,7 +92,7 @@ The template logic is evaluated in the context of the parent (`my-page.html`) an
 {% endblockinclude %}
 ```
 
-If `my-page.html` is rendered with `items = ["Apple", "Banana"]` in the context, then rendered result will be:
+Now, if `my-page.html` is rendered with `items = ["Apple", "Banana"]` in the context, then rendered result will be:
 
 ```html
 <div class="p-12 border-2 border-black">
