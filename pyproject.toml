@@ -10,7 +10,7 @@ authors = [
 maintainers= [
     {name = "Tibor Leupold", email = "tibor@lpld.io"},
 ]
-description = "Extended `include` tag to allow blocks of markup to be passed to the included template."
+description = "An extension of Django's `include` tag to pass sections of markup to the included template."
 readme = "README.md"
 classifiers = [
     # https://pypi.org/classifiers/
@@ -37,10 +37,16 @@ dependencies = [
 ]
 keywords = [
     "django",
+    "template",
     "templates",
     "include",
     "block",
+    "includes",
+    "blocks",
     "slot",
+    "slots",
+    "component",
+    "components",
 ]
 
 [project.optional-dependencies]
