@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- ...
+- Upgraded GitHub action versions to those that have upgraded to Node 24.
 
 ### Removed
 
