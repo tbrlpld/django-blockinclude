@@ -3,7 +3,7 @@
 [![License: BSD-3-Clause](https://img.shields.io/github/license/tbrlpld/django-blockinclude)](https://github.com/tbrlpld/django-blockinclude/blob/main/LICENSE)
 [![PyPI version](https://img.shields.io/pypi/v/django-blockinclude)](https://pypi.org/project/django-blockinclude/)
 [![Block Include CI](https://github.com/tbrlpld/django-blockinclude/actions/workflows/test.yml/badge.svg)](https://github.com/tbrlpld/django-blockinclude/actions/workflows/test.yml)
-[![codecov](https://codecov.io/gh/tbrlpld/django-blockincludegraph/badge.svg?token=FMHEHNVPSX)](https://codecov.io/gh/tbrlpld/django-blockinclude)
+[![codecov](https://codecov.io/gh/tbrlpld/django-blockinclude/graph/badge.svg?token=HR5IGX3XTL)](https://codecov.io/gh/tbrlpld/django-blockinclude)
 [![Published on Django Packages](https://img.shields.io/badge/Published%20on-Django%20Packages-0c3c26)](https://djangopackages.org/packages/p/django-blockinclude)
 
 ***

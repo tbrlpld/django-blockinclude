@@ -1,7 +1,7 @@
 [run]
 branch = True
 include = blockinclude/*
-omit = */migrations/*,*/tests/*
+omit = */migrations/*,*/tests/*,*/test/*
 
 [report]
 # Regexes for lines to exclude from consideration
