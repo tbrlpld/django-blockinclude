@@ -400,4 +400,4 @@ Edit the generated release notes to make them a bit more concise (e.g. remove sm
 
 Once the release notes are ready, click "publish release".
 This will trigger the release workflow, which you can observe on the ["Actions" tab](https://github.com/tbrlpld/django-blockinclude/actions).
-When the workflow completes, check the new release on [PyPI](https://pypi.org/project/blockinclude/).
+When the workflow completes, check the new release on [PyPI](https://pypi.org/project/django-blockinclude/).
